@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3 uid="uid://b8wf8j11ttsrm"]
+
+[ext_resource type="Texture2D" uid="uid://b3ikxfmarbdaa" path="res://assets/images/cards/back.png" id="1_8g2q7"]
+
+[sub_resource type="GDScript" id="GDScript_5tooj"]
+resource_name = "card"
+script/source = "extends Control
+
+var mouse_in: bool = false
+var is_dragging: bool = false
+
+func _physics_process(delta: float) -> void:
+	drag_logic(delta)
+
+func drag_logic(delta: float) -> void:
+	pass
+
+func _on_mouse_entered() -> void:
+	mouse_in = true
+func _on_mouse_exited() -> void:
+	mouse_in = false
+"
+
+[node name="card" type="Control"]
+custom_minimum_size = Vector2(33, 49)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 33.0
+offset_bottom = 49.0
+script = SubResource("GDScript_5tooj")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(16.5, 24.5)
+texture = ExtResource("1_8g2q7")
+
+[node name="shadow" type="Sprite2D" parent="Sprite2D"]
+modulate = Color(0, 0, 0, 0)
+show_behind_parent = true
+texture = ExtResource("1_8g2q7")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
