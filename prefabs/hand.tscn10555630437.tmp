@@ -1,0 +1,56 @@
+[gd_scene load_steps=4 format=3 uid="uid://21g32hmxh8h5"]
+
+[sub_resource type="GDScript" id="GDScript_uu4a1"]
+resource_name = "hand"
+script/source = "extends Area2D
+
+const card_prefab = preload(\"res://prefabs/card.tscn\")
+var snap_velocity = 15.0
+
+var mouse_in = false
+var cards = []
+var card_positions = []
+
+func _ready() -> void:
+	for i in range(15):
+		add_card()
+
+func _physics_process(delta: float) -> void:
+	for idx in range(cards.size()):
+		if cards[idx] != Mousebrain.node_being_dragged:
+			cards[idx].global_position = lerp(cards[idx].global_position, calculate_position(idx), snap_velocity * delta)
+
+func calculate_position(idx: float) -> Vector2:
+	return Vector2(global_position.x + idx / (cards.size() - 1.0) * ($CollisionShape2D.shape.size.x - cards[idx].size.x),
+		global_position.y)
+
+func card_got_dropped():
+	pass
+
+func add_card() -> void:
+	var new_card = card_prefab.instantiate()
+	new_card.got_dropped.connect(card_got_dropped)
+	get_tree().get_root().get_child(0).add_child(new_card)
+	new_card.global_position = Vector2(0,0)
+	cards.append(new_card)
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uu4a1"]
+size = Vector2(611, 125)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a6gvt"]
+size = Vector2(650, 168)
+
+[node name="hand" type="Area2D"]
+script = SubResource("GDScript_uu4a1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(305.5, 62.5)
+shape = SubResource("RectangleShape2D_uu4a1")
+disabled = true
+
+[node name="dropArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="dropArea"]
+position = Vector2(306, 63)
+shape = SubResource("RectangleShape2D_a6gvt")
