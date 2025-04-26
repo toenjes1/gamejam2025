@@ -6,7 +6,7 @@ var drop_spots = []
 
 var node_being_dragged: Node = null
 
-func spawn_card() -> void:
+func spawn_player_card() -> void:
 	var new_card = card_prefab.instantiate()
 	new_card.got_dropped.connect(hand.card_got_dropped)
 	new_card.got_drop_spotted.connect(hand.remove_card)
