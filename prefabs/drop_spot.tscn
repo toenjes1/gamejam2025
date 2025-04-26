@@ -24,6 +24,7 @@ func card_got_dropped(card) -> void:
 		cards.append(card)
 		card.drop_spotted()
 		card.set_sprite_z_index(cards.size() - 1)
+		card.get_parent().move_child(card, -1)
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5g2wd"]
