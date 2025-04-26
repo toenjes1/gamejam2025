@@ -7,7 +7,8 @@ resource_name = "drop_spot"
 script/source = "extends Area2D
 
 const snap_velocity = 15.0
-const vertical_offset = 15
+const vertical_offset = 23
+@onready var init_size = $CollisionShape2D.shape.size
 
 var cards = []
 var enemy_cards = []
@@ -20,7 +21,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
-		var desired_pos = global_position + $CollisionShape2D.shape.size / 2 + Vector2(0.0, idx * vertical_offset)
+		var desired_pos = global_position + init_size / 2 + Vector2(0.0, idx * vertical_offset)
 		cards[idx].global_position = lerp(cards[idx].global_position + cards[idx].size / 2, desired_pos, snap_velocity * delta) - cards[idx].size / 2
 
 func card_got_dropped(card) -> void:
@@ -30,6 +31,7 @@ func card_got_dropped(card) -> void:
 		card.drop_spotted()
 		card.set_sprite_z_index(cards.size() - 1)
 		card.get_parent().move_child(card, -1)
+		$CollisionShape2D.shape.size.y = init_size.y + cards.size() * vertical_offset
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5g2wd"]
