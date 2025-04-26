@@ -71,6 +71,15 @@ func switch_to_scene(scene_name: String) -> void:
 func end_game() -> void:
 	get_tree().quit()
 
+func get_card_val(card) -> int:
+	var card_id = card.card_id
+	if card_props[card_id].is_number:
+		return card_props[card_id].value
+	return -1
+
+func is_card_num(card) -> bool:
+	return card_props[card.card_id].is_number
+
 func _physics_process(delta: float) -> void:
 	if played_cards.is_empty():
 		return
@@ -131,20 +140,19 @@ func spawn_enemy_card() -> void:
 	new_card.is_player_card = false
 	enemy_hand.add_card(new_card)
 
-func enemy_play(card, idx) -> Node:
-	var target_spot = drop_spots[idx]
-	var move_to = target_spot.get_child(2).global_position - card.size / 2 - Vector2(0, played_cards.size() * 23)
+func enemy_play(card, spot) -> Node:
+	var move_to = spot.get_child(2).global_position - card.size / 2 - Vector2(0, played_cards.size() * 23)
 	enemy_hand.cards.erase(card)
 	played_cards.append(card)
 	played_card_positions.append(move_to)
-	return target_spot
+	return spot
 
 func card_played(player_card) -> void:
-	var enemy_card_play = enemy_hand.choose_card()
-	var drop_spot = enemy_play(enemy_card_play, 0)
+	var enemy_play = enemy_hand.choose_move(drop_spots, hand.cards)
+	var drop_spot = enemy_play(enemy_play[0], enemy_play[1])
 	await get_tree().create_timer(1).timeout
 	player_card.turn_to_front()
 	played_cards[played_cards.size() - 1].turn_to_front()
 	player_card.dropped_location.calculate_sum(player_card.card_id)
-	drop_spot.calculate_enemy_sum(enemy_card_play.card_id)
+	drop_spot.calculate_enemy_sum(enemy_play[0].card_id)
 	player_card.dropped_location.set_type_display()

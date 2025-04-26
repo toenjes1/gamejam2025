@@ -7,6 +7,8 @@
 resource_name = "drop_spot"
 script/source = "extends Area2D
 
+const max_stack_size: int = 4
+
 const snap_velocity = 15.0
 const vertical_offset = 23
 @onready var init_size = $CollisionShape2D.shape.size
@@ -17,10 +19,23 @@ var enemy_cards = []
 var player_cards_sum = 0
 var enemy_cards_sum = 0
 var base_value
+var base_value_enemy
 var restriction: bool
 
 func _ready() -> void:
 	Global.drop_spots.append(self)
+
+func player_is_full() -> bool:
+	return cards.size() >= max_stack_size
+
+func enemy_is_full() -> bool:
+	return enemy_cards.size() >= max_stack_size
+
+func player_is_empty() -> bool:
+	return cards.is_empty()
+
+func enemy_is_empty() -> bool:
+	return enemy_cards.is_empty()
 
 func empty_card_refs():
 	for idx in range(cards.size()):

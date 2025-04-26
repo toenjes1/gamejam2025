@@ -41,8 +41,20 @@ func calculate_position(idx: float) -> Vector2:
 func add_card(new_card) -> void:
 	cards.append(new_card)
 
-func choose_card() -> Node:
-	return cards[0]
+func choose_move(spots: Array, player_cards: Array) -> Array:
+	var chosen_spot = spots[0]
+	var chosen_card = cards[0]
+	spots.shuffle()
+	for spot in spots:
+		for card in cards:
+			print(spot.base_value, Global.get_card_val(card))
+			if Global.get_card_val(card) == spot.base_value:
+				return [card, spot]
+	for spot in spots:
+		for card in cards:
+			if ((Global.is_card_num(card) and spot.enemy_is_empty()) or !Global.is_card_num(card)) and !spot.enemy_is_full():
+				return [card, spot]
+	return [cards[0], spots[0]]
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uu4a1"]

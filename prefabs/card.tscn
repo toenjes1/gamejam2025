@@ -22,7 +22,6 @@ const rotation_stiffness = 0.85
 var in_hand_z = möm
 var card_id
 
-
 var mouse_in: bool = false
 var is_dragging: bool = false
 var is_drop_spotted: bool = false
