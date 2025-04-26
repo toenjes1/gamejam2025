@@ -27,6 +27,7 @@ var mouse_in: bool = false
 var is_dragging: bool = false
 var is_drop_spotted: bool = false
 var show_front: bool = false
+var player_card
 
 var front_texture
 
@@ -90,6 +91,7 @@ func drag_logic(delta: float) -> void:
 			$Sprite2D.z_index = 100
 			is_dragging = true
 			Global.node_being_dragged = self
+			Global.node_being_dragged_is_player = player_card
 		else:
 			_change_scale(card_scale * 1.1)
 			$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)

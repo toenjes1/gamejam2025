@@ -35,6 +35,10 @@ var enemy_hand
 var drop_spots = []
 
 var node_being_dragged: Node = null
+var node_being_dragged_is_player: int = -1
+# -1 := no card being dragged
+# 0 := enemy card being dragged
+# 1 := player card being dragged
 
 func _ready() -> void:
 	for card_id in card_props:
@@ -65,6 +69,7 @@ func spawn_cards() -> void:
 
 func spawn_player_card() -> void:
 	var new_card = spawn_card(random_numb_card_id(player_rng), true)
+	new_card.player_card = true
 	new_card.got_dropped.connect(hand.card_got_dropped)
 	new_card.got_drop_spotted.connect(hand.remove_card)
 	for drop_spot in drop_spots:
@@ -73,4 +78,5 @@ func spawn_player_card() -> void:
 
 func spawn_enemy_card() -> void:
 	var new_card = spawn_card(random_numb_card_id(player_rng), false)
+	new_card.player_card = false
 	enemy_hand.add_card(new_card)

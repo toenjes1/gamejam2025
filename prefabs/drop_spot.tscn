@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://cdcpxpfojuaeq"]
+[gd_scene load_steps=5 format=3 uid="uid://cdcpxpfojuaeq"]
 
 [ext_resource type="Texture2D" uid="uid://31opkp4ms3cq" path="res://assets/images/backdrop_elements/border.png" id="1_mwg88"]
+[ext_resource type="Texture2D" uid="uid://8y1qkdwu7n2l" path="res://assets/images/backdrop_elements/border_hover.png" id="2_lx47d"]
 
 [sub_resource type="GDScript" id="GDScript_5g2wd"]
 resource_name = "drop_spot"
@@ -10,6 +11,7 @@ const snap_velocity = 15.0
 const vertical_offset = 23
 @onready var init_size = $CollisionShape2D.shape.size
 
+var is_highlighted = false
 var cards = []
 var enemy_cards = []
 
@@ -20,6 +22,9 @@ func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
 		var desired_pos = global_position + init_size / 2 + Vector2(0.0, idx * vertical_offset)
 		cards[idx].global_position = lerp(cards[idx].global_position + cards[idx].size / 2, desired_pos, snap_velocity * delta) - cards[idx].size / 2
+	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
+	if guard != is_highlighted:
+		_toggle_highlight()
 
 func card_got_dropped(card) -> void:
 	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
@@ -30,6 +35,18 @@ func card_got_dropped(card) -> void:
 		card.get_parent().move_child(card, -1)
 		card.turn_to_back()
 		$CollisionShape2D.shape.size.y = init_size.y + cards.size() * vertical_offset
+
+func _toggle_highlight():
+	if !Global.node_being_dragged or Global.node_being_dragged_is_player != 1:
+		return
+	if is_highlighted:
+		$highlight.visible = false
+		is_highlighted = false
+		print(\"false\")
+	else:
+		$highlight.visible = true
+		is_highlighted = true
+		print(\"true\")
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5g2wd"]
@@ -51,3 +68,11 @@ texture = ExtResource("1_mwg88")
 position = Vector2(54, -75)
 scale = Vector2(2.26744, 2.26744)
 texture = ExtResource("1_mwg88")
+
+[node name="highlight" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(54, 75)
+scale = Vector2(2.3, 2.3)
+texture = ExtResource("2_lx47d")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
