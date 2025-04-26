@@ -7,7 +7,9 @@ resource_name = "card"
 script/source = "extends Control
 
 signal got_dropped(card)
+signal got_drop_spotted(card)
 
+const möm = 10
 const drag_velocity = 22.0
 const rotation_velocity = 12.0
 const rotation_stiffness = 0.85
@@ -17,16 +19,27 @@ var in_hand_z = 0
 
 var mouse_in: bool = false
 var is_dragging: bool = false
+var is_drop_spotted: bool = false
 
 func _physics_process(delta: float) -> void:
 	drag_logic(delta)
 
 func set_sprite_z_index(z):
-	$Sprite2D.z_index = z
+	$Sprite2D.z_index = z + möm
 	in_hand_z = z
 
 func drag_logic(delta: float) -> void:
 	$Sprite2D/shadow.position = Vector2(-12, 12).rotated($Sprite2D.rotation)
+	if is_drop_spotted:
+		if mouse_in:
+			_change_scale(card_scale * 1.1)
+			$Sprite2D.z_index = 100
+		else:
+			_change_scale(card_scale)
+			$Sprite2D.z_index = in_hand_z
+		return
+		
+		
 	if ((mouse_in or is_dragging)
 		and (Mousebrain.node_being_dragged == null or Mousebrain.node_being_dragged == self)):
 		if Input.is_action_pressed(\"click\"):
@@ -50,6 +63,10 @@ func drag_logic(delta: float) -> void:
 	if $Sprite2D.rotation_degrees != 0.0:
 		$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)
 	_change_scale(card_scale)
+
+func drop_spotted() -> void:
+	is_drop_spotted = true
+	got_drop_spotted.emit(self)
 
 func _on_mouse_entered() -> void:
 	mouse_in = true

@@ -4,20 +4,20 @@
 resource_name = "hand"
 script/source = "extends Area2D
 
-const card_prefab = preload(\"res://prefabs/card.tscn\")
-const möm = 10
 var snap_velocity = 15.0
 
 var cards = []
 var card_positions = []
 
 func _ready() -> void:
-	for i in range(6):
-		add_card()
+	Mousebrain.hand = self
+
+func remove_card(card) -> void:
+	cards.erase(card)
 
 func update_card_z_values():
 	for idx in range(cards.size()):
-		cards[idx].set_sprite_z_index(idx + möm)
+		cards[idx].set_sprite_z_index(idx)
 
 func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
@@ -39,11 +39,7 @@ func card_got_dropped(card):
 		cards.append(card)
 		update_card_z_values()
 
-func add_card() -> void:
-	var new_card = card_prefab.instantiate()
-	new_card.got_dropped.connect(card_got_dropped)
-	get_tree().get_root().get_child(0).add_child(new_card)
-	new_card.global_position = Vector2(0,0)
+func add_card(new_card) -> void:
 	cards.append(new_card)
 "
 

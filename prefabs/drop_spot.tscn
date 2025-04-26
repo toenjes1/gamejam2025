@@ -1,0 +1,36 @@
+[gd_scene load_steps=3 format=3 uid="uid://cdcpxpfojuaeq"]
+
+[sub_resource type="GDScript" id="GDScript_5g2wd"]
+resource_name = "drop_spot"
+script/source = "extends Area2D
+
+const snap_velocity = 15.0
+const vertical_offset = 15
+
+var cards = []
+
+func _ready() -> void:
+	Mousebrain.drop_spots.append(self)
+	for i in range(5):
+		Mousebrain.spawn_card()
+
+func _physics_process(delta: float) -> void:
+	for idx in range(cards.size()):
+		var desired_pos = global_position + Vector2(0.0, idx * vertical_offset)
+		cards[idx].global_position = lerp(cards[idx].global_position, desired_pos, snap_velocity * delta)
+
+func card_got_dropped(card) -> void:
+	if Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position()):
+		cards.append(card)
+		card.drop_spotted()
+		card.set_sprite_z_index(cards.size() - 1)
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5g2wd"]
+size = Vector2(116, 152)
+
+[node name="drop_spot" type="Area2D"]
+script = SubResource("GDScript_5g2wd")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_5g2wd")
