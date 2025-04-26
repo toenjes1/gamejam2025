@@ -10,6 +10,7 @@ const snap_velocity = 15.0
 const vertical_offset = 15
 
 var cards = []
+var enemy_cards = []
 
 func _ready() -> void:
 	Mousebrain.drop_spots.append(self)
@@ -44,4 +45,9 @@ shape = SubResource("RectangleShape2D_5g2wd")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(54, 75)
 scale = Vector2(2.3, 2.3)
+texture = ExtResource("1_mwg88")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(54, -75)
+scale = Vector2(2.26744, 2.26744)
 texture = ExtResource("1_mwg88")
