@@ -49,17 +49,16 @@ func turn():
 
 func _on_animation_finished(anim_name: StringName) -> void:
 	if anim_name == 'turn':
+		show_front = not show_front
 		reset_sprite_texture()
 		anim_player.play('turn_reverse')
 
 func turn_to_back():
 	if show_front:
-		show_front = false
 		turn()
 
 func turn_to_front():
 	if !show_front:
-		show_front = true
 		turn()
 
 func set_sprite_z_index(z):
@@ -136,6 +135,37 @@ func _set_rotation(delta: float) -> void:
 	$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, desired_rotation, rotation_velocity * delta)
 	
 	last_pos = global_position
+
+func half_texture() -> bool:
+	if not Global.card_props[card_id]['is_number']:
+		return false
+	
+	if Global.card_props[card_id]['value'] == 9:
+		set_sprite_texture(load(\"res://assets/images/cards/5_card.png\"))
+		card_id = '5'
+	elif Global.card_props[card_id]['value'] == 8:
+		set_sprite_texture(load(\"res://assets/images/cards/4_card.png\"))
+		card_id = '4'
+	elif Global.card_props[card_id]['value'] == 7:
+		set_sprite_texture(load(\"res://assets/images/cards/4_card.png\"))
+		card_id = '4'
+	elif Global.card_props[card_id]['value'] == 6:
+		set_sprite_texture(load(\"res://assets/images/cards/3_card.png\"))
+		card_id = '3'
+	elif Global.card_props[card_id]['value'] == 5:
+		set_sprite_texture(load(\"res://assets/images/cards/3_card.png\"))
+		card_id = '3'
+	elif Global.card_props[card_id]['value'] == 4:
+		set_sprite_texture(load(\"res://assets/images/cards/2_card.png\"))
+		card_id = '2'
+	elif Global.card_props[card_id]['value'] == 3:
+		set_sprite_texture(load(\"res://assets/images/cards/2_card.png\"))
+		card_id = '2'
+	elif Global.card_props[card_id]['value'] == 2:
+		set_sprite_texture(load(\"res://assets/images/cards/1_card.png\"))
+		card_id = '1'
+	return true
+	
 "
 
 [sub_resource type="Animation" id="Animation_5tooj"]

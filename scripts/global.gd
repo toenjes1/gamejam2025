@@ -16,14 +16,14 @@ var card_props = {
 	'8': {'name': "Eight", 'is_number': true, 'value': 8, 'texture': '8_card.png'},
 	'9': {'name': "Nine", 'is_number': true, 'value': 9, 'texture': '9_card.png'},
 	'jok': {'name': "Joker", 'is_number': false, 'texture': 'joker_card.png'},
-	'blo': {'name': "Block", 'is_number': false},
+	'blo': {'name': "Block", 'is_number': false, 'texture': 'block_card.png'},
 	'rig': {'name': "Right", 'is_number': false},
 	'lef': {'name': "Left", 'is_number': false},
 	'mov': {'name': "Move", 'is_number': false},
 	'rev': {'name': "Reverse", 'is_number': false},
-	'nul': {'name': "Nullify", 'is_number': false},
+	'nul': {'name': "Nullify", 'is_number': false, 'texture': 'empty_card.png'},
 	'gen': {'name': "Genesis", 'is_number': false},
-	'hal': {'name': "Half", 'is_number': false},
+	'hal': {'name': "Half", 'is_number': false, 'texture': 'half_card.png'},
 }
 
 const no_card_texture = preload(card_base_path + "no_card.png")
@@ -31,8 +31,8 @@ const no_card_texture = preload(card_base_path + "no_card.png")
 var numb_card_ids = []
 var spec_card_ids = []
 
-var player_bag = []
-var enemy_bag = []
+var player_bag = ['hal', '8', '8', '8']
+var enemy_bag = ['9', '9', 'hal']
 
 const card_prefab = preload("res://prefabs/card.tscn")
 var hand = null
@@ -141,7 +141,8 @@ func spawn_enemy_card() -> void:
 	enemy_hand.add_card(new_card)
 
 func enemy_play(card, spot) -> Node:
-	var move_to = spot.get_child(2).global_position - card.size / 2 - Vector2(0, played_cards.size() * 23)
+	spot.enemy_cards.append(card)
+	var move_to = spot.get_child(2).global_position - card.size / 2 - Vector2(0, spot.enemy_cards.size() * 23)
 	enemy_hand.cards.erase(card)
 	played_cards.append(card)
 	played_card_positions.append(move_to)
@@ -156,3 +157,4 @@ func card_played(player_card) -> void:
 	player_card.dropped_location.calculate_sum(player_card.card_id)
 	drop_spot.calculate_enemy_sum(enemy_play[0].card_id)
 	player_card.dropped_location.set_type_display()
+	drop_spot.activate_trap_card(enemy_card_play.card_id)
