@@ -30,8 +30,8 @@ var numb_card_ids = []
 var spec_card_ids = []
 
 const card_prefab = preload("res://prefabs/card.tscn")
-var hand
-var enemy_hand
+var hand = null
+var enemy_hand = null
 var drop_spots = []
 
 var node_being_dragged: Node = null
@@ -45,6 +45,20 @@ func _ready() -> void:
 			spec_card_ids.append(card_id)
 		if card_props[card_id].has('texture'):
 			card_props[card_id].texture = load(card_base_path + card_props[card_id].texture)
+
+func switch_to_scene(scene_name: String) -> void:
+	if scene_name != "world":
+		hand.empty_card_refs()
+		enemy_hand.empty_card_refs()
+		for drop_spot in drop_spots:
+			drop_spot.empty_card_refs()
+		hand = null
+		enemy_hand = null
+		drop_spots = []
+	get_tree().change_scene_to_file("res://scenes/" + scene_name + ".tscn")
+
+func end_game() -> void:
+	get_tree().quit()
 
 func random_numb_card_id(rng: RandomNumberGenerator) -> String:
 	return numb_card_ids[rng.randi_range(0, numb_card_ids.size() - 1)]

@@ -14,10 +14,10 @@ func _on_button_continue_pressed() -> void:
 	anim_player.play_backwards(\"fade_in\")
 
 func _on_button_exit_pressed() -> void:
-	print(\"pressed\")
+	Global.end_game()
 
 func _on_button_main_menu_pressed() -> void:
-	print(\"pressed\")
+	Global.switch_to_scene(\"main_menu\")
 
 func _on_button_menu_pressed() -> void:
 	is_open = true
@@ -28,6 +28,33 @@ func _on_animation_finished(anim_name: StringName) -> void:
 	if anim_name == \"fade_in\" and !is_open:
 		visible = false
 "
+
+[sub_resource type="Animation" id="Animation_f06o2"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position:y")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [-50.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
 
 [sub_resource type="Animation" id="Animation_oeexw"]
 resource_name = "fade_in"
@@ -57,33 +84,6 @@ tracks/1/keys = {
 "values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
 }
 
-[sub_resource type="Animation" id="Animation_f06o2"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:position:y")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [-50.0]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath(".:modulate")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_f06o2"]
 _data = {
 &"RESET": SubResource("Animation_f06o2"),
@@ -105,6 +105,7 @@ offset_bottom = 626.0
 color = Color(0, 0.0627451, 0, 0.498039)
 
 [node name="button_main_menu" type="TextureButton" parent="."]
+layout_mode = 0
 offset_left = 407.0
 offset_top = 44.0
 offset_right = 535.0
@@ -114,6 +115,7 @@ texture_pressed = ExtResource("1_oeexw")
 texture_hover = ExtResource("1_oeexw")
 
 [node name="button_exit" type="TextureButton" parent="."]
+layout_mode = 0
 offset_left = 401.0
 offset_top = 232.0
 offset_right = 529.0
