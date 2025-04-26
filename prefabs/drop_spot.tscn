@@ -15,10 +15,6 @@ var enemy_cards = []
 
 func _ready() -> void:
 	Global.drop_spots.append(self)
-	for i in range(5):
-		Global.spawn_card(Global.random_numb_card_id(Global.player_rng), true)
-		Mousebrain.spawn_player_card()
-		Mousebrain.spawn_enemy_card()
 
 func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):

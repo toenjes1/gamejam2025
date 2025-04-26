@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://x4d5upmedb3l"]
+[gd_scene load_steps=3 format=3 uid="uid://dh0jkpep4cp4u"]
 
 [sub_resource type="GDScript" id="GDScript_uu4a1"]
 resource_name = "hand"
@@ -10,7 +10,7 @@ var cards = []
 var card_positions = []
 
 func _ready() -> void:
-	Mousebrain.enemy_hand = self
+	Global.enemy_hand = self
 
 func remove_card(card) -> void:
 	cards.erase(card)
@@ -21,12 +21,17 @@ func update_card_z_values():
 
 func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
-		if cards[idx] != Mousebrain.node_being_dragged:
+		if cards[idx] != Global.node_being_dragged:
 			cards[idx].global_position = lerp(cards[idx].global_position, calculate_position(idx), snap_velocity * delta)
 
 func calculate_position(idx: float) -> Vector2:
-	return Vector2(global_position.x + idx / (cards.size() - 1.0) * ($CollisionShape2D.shape.size.x - cards[idx].size.x),
-		global_position.y)
+	if cards.size() > 1:
+		return Vector2(global_position.x + idx / (cards.size() - 1.0) * ($CollisionShape2D.shape.size.x - cards[idx].size.x),
+			global_position.y)
+	elif cards.size() == 1:
+		return Vector2(global_position.x + ($CollisionShape2D.shape.size.x - cards[idx].size.x) / 2.0,
+			global_position.y)
+	return Vector2.ZERO
 
 func add_card(new_card) -> void:
 	cards.append(new_card)

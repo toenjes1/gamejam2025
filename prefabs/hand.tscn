@@ -25,8 +25,13 @@ func _physics_process(delta: float) -> void:
 			cards[idx].global_position = lerp(cards[idx].global_position, calculate_position(idx), snap_velocity * delta)
 
 func calculate_position(idx: float) -> Vector2:
-	return Vector2(global_position.x + idx / (cards.size() - 1.0) * ($CollisionShape2D.shape.size.x - cards[idx].size.x),
-		global_position.y)
+	if cards.size() > 1:
+		return Vector2(global_position.x + idx / (cards.size() - 1.0) * ($CollisionShape2D.shape.size.x - cards[idx].size.x),
+			global_position.y)
+	elif cards.size() == 1:
+		return Vector2(global_position.x + ($CollisionShape2D.shape.size.x - cards[idx].size.x) / 2.0,
+			global_position.y)
+	return Vector2.ZERO
 
 func card_got_dropped(card):
 	update_card_z_values()

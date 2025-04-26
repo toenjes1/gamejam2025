@@ -31,6 +31,7 @@ var spec_card_ids = []
 
 const card_prefab = preload("res://prefabs/card.tscn")
 var hand
+var enemy_hand
 var drop_spots = []
 
 var node_being_dragged: Node = null
@@ -48,16 +49,28 @@ func _ready() -> void:
 func random_numb_card_id(rng: RandomNumberGenerator) -> String:
 	return numb_card_ids[rng.randi_range(0, numb_card_ids.size() - 1)]
 
-func spawn_card(card_id: String, show_front: bool = false) -> void:
+func spawn_card(card_id: String, show_front: bool = false) -> Node:
 	var new_card = card_prefab.instantiate()
-	new_card.got_dropped.connect(hand.card_got_dropped)
-	new_card.got_drop_spotted.connect(hand.remove_card)
-	for drop_spot in drop_spots:
-		new_card.got_dropped.connect(drop_spot.card_got_dropped)
 	new_card.set_card_id(card_id)
 	new_card.show_front = show_front
 	if card_props[card_id].has('texture'):
 		new_card.set_sprite_texture(card_props[card_id].texture)
 	get_tree().get_root().get_child(0).add_child(new_card)
 	new_card.global_position = Vector2(0,0)
+	return new_card
+
+func spawn_cards() -> void:
+	spawn_player_card()
+	spawn_enemy_card()
+
+func spawn_player_card() -> void:
+	var new_card = spawn_card(random_numb_card_id(player_rng), true)
+	new_card.got_dropped.connect(hand.card_got_dropped)
+	new_card.got_drop_spotted.connect(hand.remove_card)
+	for drop_spot in drop_spots:
+		new_card.got_dropped.connect(drop_spot.card_got_dropped)
 	hand.add_card(new_card)
+
+func spawn_enemy_card() -> void:
+	var new_card = spawn_card(random_numb_card_id(player_rng), false)
+	enemy_hand.add_card(new_card)

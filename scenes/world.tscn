@@ -1,11 +1,21 @@
-[gd_scene load_steps=4 format=3 uid="uid://brdcotededjl4"]
+[gd_scene load_steps=5 format=3 uid="uid://brdcotededjl4"]
 
 [ext_resource type="PackedScene" uid="uid://21g32hmxh8h5" path="res://prefabs/hand.tscn" id="1_nnsk1"]
 [ext_resource type="PackedScene" uid="uid://cdcpxpfojuaeq" path="res://prefabs/drop_spot.tscn" id="2_rwgxs"]
-[ext_resource type="PackedScene" uid="uid://x4d5upmedb3l" path="res://prefabs/enemy_hand.tscn" id="4_k0juu"]
+[ext_resource type="PackedScene" uid="uid://dh0jkpep4cp4u" path="res://prefabs/enemy_hand.tscn" id="4_k0juu"]
+
+[sub_resource type="GDScript" id="GDScript_4wyf3"]
+resource_name = "puppetmaster"
+script/source = "extends Node2D
+
+func _ready():
+	for i in range(5):
+		Global.spawn_player_card()
+		Global.spawn_enemy_card()
+"
 
 [node name="world" type="Node2D"]
-position = Vector2(1, -9)
+script = SubResource("GDScript_4wyf3")
 
 [node name="enemy_hand" parent="." instance=ExtResource("4_k0juu")]
 position = Vector2(265, -27)
