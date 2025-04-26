@@ -27,7 +27,8 @@ var mouse_in: bool = false
 var is_dragging: bool = false
 var is_drop_spotted: bool = false
 var show_front: bool = false
-var player_card
+var is_player_card: bool
+var dropped_location
 
 var front_texture
 
@@ -68,7 +69,7 @@ func set_sprite_z_index(z):
 
 func drag_logic(delta: float) -> void:
 	$Sprite2D/shadow.position = Vector2(-12, 12).rotated($Sprite2D.rotation)
-	if is_drop_spotted:
+	if is_drop_spotted or not is_player_card:
 		$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)
 		if mouse_in:
 			_change_scale(card_scale * 1.1)
@@ -91,7 +92,7 @@ func drag_logic(delta: float) -> void:
 			$Sprite2D.z_index = 100
 			is_dragging = true
 			Global.node_being_dragged = self
-			Global.node_being_dragged_is_player = player_card
+			Global.node_being_dragged_is_player = is_player_card
 		else:
 			_change_scale(card_scale * 1.1)
 			$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)
@@ -109,7 +110,7 @@ func drag_logic(delta: float) -> void:
 func drop_spotted() -> void:
 	is_drop_spotted = true
 	got_drop_spotted.emit(self)
-	Global.card_played()
+	Global.card_played(self)
 
 func _on_mouse_entered() -> void:
 	mouse_in = true

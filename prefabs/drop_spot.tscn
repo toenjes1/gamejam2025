@@ -14,6 +14,10 @@ const vertical_offset = 23
 var is_highlighted = false
 var cards = []
 var enemy_cards = []
+var player_cards_sum = 0
+var enemy_cards_sum = 0
+var base_value
+var restriction: bool
 
 func _ready() -> void:
 	Global.drop_spots.append(self)
@@ -22,31 +26,61 @@ func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
 		var desired_pos = global_position + init_size / 2 + Vector2(0.0, idx * vertical_offset)
 		cards[idx].global_position = lerp(cards[idx].global_position + cards[idx].size / 2, desired_pos, snap_velocity * delta) - cards[idx].size / 2
+	
+	if !Global.node_being_dragged or Global.node_being_dragged_is_player != 1:
+		return
+	
 	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
-	if guard != is_highlighted:
+	
+	if cards.is_empty():
+		restriction = true
+	else:
+		restriction = Global.card_props[cards[cards.size() - 1].card_id]['value'] == Global.card_props[Global.node_being_dragged.card_id]['value']
+	
+	if guard != is_highlighted and restriction:
 		_toggle_highlight()
 
 func card_got_dropped(card) -> void:
 	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
-	if guard:
+	
+	if cards.is_empty():
+		restriction = true
+	else:
+		restriction = Global.card_props[cards[cards.size() - 1].card_id]['value'] == Global.card_props[card.card_id]['value']
+	
+	if guard and restriction:
 		cards.append(card)
 		card.drop_spotted()
 		card.set_sprite_z_index(cards.size() - 1)
 		card.get_parent().move_child(card, -1)
 		card.turn_to_back()
+		card.dropped_location = self
 		$CollisionShape2D.shape.size.y = init_size.y + cards.size() * vertical_offset
 		$highlight.visible = false
 		is_highlighted = false
+		if Global.card_props[card.card_id]['is_number'] and cards.size() == 1:
+			base_value = Global.card_props[card.card_id]['value']
 
 func _toggle_highlight():
-	if !Global.node_being_dragged or Global.node_being_dragged_is_player != 1:
-		return
 	if is_highlighted:
 		$highlight.visible = false
 		is_highlighted = false
 	else:
 		$highlight.visible = true
 		is_highlighted = true
+
+func calculate_sum(new_card):
+	if Global.card_props[new_card]['is_number']:
+		player_cards_sum += Global.card_props[new_card]['value']
+		$sum.text = str(player_cards_sum)
+
+func set_type_display():
+	$type.text = str(base_value)
+	
+func calculate_enemy_sum(new_card):
+	if Global.card_props[new_card]['is_number']:
+		enemy_cards_sum += Global.card_props[new_card]['value']
+		$enemy_sum.text = str(enemy_cards_sum)
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5g2wd"]
@@ -75,5 +109,25 @@ visible = false
 position = Vector2(54, 75)
 scale = Vector2(2.3, 2.3)
 texture = ExtResource("2_lx47d")
+
+[node name="type" type="Label" parent="."]
+offset_left = 119.0
+offset_top = 111.0
+offset_right = 159.0
+offset_bottom = 134.0
+
+[node name="sum" type="Label" parent="."]
+offset_left = 115.0
+offset_top = 18.0
+offset_right = 155.0
+offset_bottom = 41.0
+text = "0"
+
+[node name="enemy_sum" type="Label" parent="."]
+offset_left = 115.0
+offset_top = -39.0
+offset_right = 155.0
+offset_bottom = -16.0
+text = "0"
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]

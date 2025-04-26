@@ -77,7 +77,7 @@ func spawn_cards() -> void:
 
 func spawn_player_card() -> void:
 	var new_card = spawn_card(random_numb_card_id(player_rng), true)
-	new_card.player_card = true
+	new_card.is_player_card = true
 	new_card.got_dropped.connect(hand.card_got_dropped)
 	new_card.got_drop_spotted.connect(hand.remove_card)
 	for drop_spot in drop_spots:
@@ -86,15 +86,23 @@ func spawn_player_card() -> void:
 
 func spawn_enemy_card() -> void:
 	var new_card = spawn_card(random_numb_card_id(player_rng), false)
-	new_card.player_card = false
+	new_card.is_player_card = false
 	enemy_hand.add_card(new_card)
 
-func enemy_play(card, idx) -> void:
-	var move_to = drop_spots[idx].get_child(2).global_position - card.size / 2 - Vector2(0, played_cards.size() * 23)
+func enemy_play(card, idx) -> Node:
+	var target_spot = drop_spots[idx]
+	var move_to = target_spot.get_child(2).global_position - card.size / 2 - Vector2(0, played_cards.size() * 23)
 	enemy_hand.cards.erase(card)
 	played_cards.append(card)
 	played_card_positions.append(move_to)
+	return target_spot
 
-func card_played() -> void:
+func card_played(player_card) -> void:
 	var enemy_card_play = enemy_hand.choose_card()
-	enemy_play(enemy_card_play, 0)
+	var drop_spot = enemy_play(enemy_card_play, 0)
+	await get_tree().create_timer(1).timeout
+	player_card.turn_to_front()
+	played_cards[played_cards.size() - 1].turn_to_front()
+	player_card.dropped_location.calculate_sum(player_card.card_id)
+	player_card.dropped_location.set_type_display()
+	drop_spot.calculate_enemy_sum(enemy_card_play.card_id)
