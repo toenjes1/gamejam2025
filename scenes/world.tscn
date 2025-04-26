@@ -39,6 +39,10 @@ func _on_mouse_exited() -> void:
 func _on_hourglass_animation_looped() -> void:
 	if !hourglass_is_spinning:
 		hourglass.stop()
+
+func _on_button_up() -> void:
+	if (z_index == 0):
+		z_index = 116
 "
 
 [sub_resource type="Animation" id="Animation_w7kh3"]
@@ -358,6 +362,14 @@ position = Vector2(864, 262)
 scale = Vector2(2, 2)
 texture = ExtResource("10_w7kh3")
 
+[node name="menu" parent="." instance=ExtResource("5_i7141")]
+visible = false
+z_index = 101
+
+[node name="chrono_choice" parent="." instance=ExtResource("7_i7141")]
+visible = false
+z_index = 101
+
 [node name="button_chrono" type="TextureButton" parent="."]
 offset_left = 828.0
 offset_top = 174.0
@@ -389,15 +401,9 @@ scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_817gm")
 frame_progress = 0.546459
 
-[node name="menu" parent="." instance=ExtResource("5_i7141")]
-visible = false
-z_index = 101
-
-[node name="chrono_choice" parent="." instance=ExtResource("7_i7141")]
-visible = false
-z_index = 101
-
 [connection signal="button_up" from="button_menu" to="menu" method="_on_button_menu_pressed"]
+[connection signal="button_up" from="button_end_round" to="hand" method="_on_button_end_round_button_up"]
+[connection signal="button_up" from="button_chrono" to="button_chrono" method="_on_button_up"]
 [connection signal="button_up" from="button_chrono" to="chrono_choice" method="_on_button_chrono_pressed"]
 [connection signal="mouse_entered" from="button_chrono" to="button_chrono" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="button_chrono" to="button_chrono" method="_on_mouse_exited"]

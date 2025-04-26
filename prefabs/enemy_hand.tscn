@@ -6,11 +6,13 @@ script/source = "extends Area2D
 
 var snap_velocity = 15.0
 
+var health = 20
 var cards = []
 var card_positions = []
 
 func _ready() -> void:
 	Global.enemy_hand = self
+	$healthDisplay.text = str(health)
 
 func remove_card(card) -> void:
 	cards.erase(card)
@@ -43,6 +45,13 @@ func add_card(new_card) -> void:
 
 func choose_card() -> Node:
 	return cards[0]
+	
+func damage_enemy(amount: int) -> void:
+	if ((health - amount) >= 0):
+		health -= amount
+	else: 
+		health = 0
+	$healthDisplay.text = str(health)
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uu4a1"]
@@ -55,3 +64,12 @@ script = SubResource("GDScript_uu4a1")
 position = Vector2(305.5, 49)
 shape = SubResource("RectangleShape2D_uu4a1")
 disabled = true
+
+[node name="healthDisplay" type="Label" parent="."]
+offset_left = -44.0
+offset_top = 53.0
+offset_right = -4.0
+offset_bottom = 98.0
+theme_override_font_sizes/font_size = 32
+text = "0"
+horizontal_alignment = 2

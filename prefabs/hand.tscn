@@ -6,11 +6,13 @@ script/source = "extends Area2D
 
 var snap_velocity = 15.0
 
+var health = 15
 var cards = []
 var card_positions = []
 
 func _ready() -> void:
 	Global.hand = self
+	$healthDisplay.text = str(health)
 
 func remove_card(card) -> void:
 	cards.erase(card)
@@ -52,6 +54,17 @@ func card_got_dropped(card):
 
 func add_card(new_card) -> void:
 	cards.append(new_card)
+	
+func damage_player(amount: int) -> void:
+	if ((health - amount) >= 0):
+		health -= amount
+	else: 
+		health = 0
+	$healthDisplay.text = str(health)
+
+
+func _on_button_end_round_button_up() -> void:
+	damage_player(2) # Replace with function body.
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uu4a1"]
@@ -74,3 +87,12 @@ disabled = true
 position = Vector2(305, 35.5)
 shape = SubResource("RectangleShape2D_a6gvt")
 disabled = true
+
+[node name="healthDisplay" type="Label" parent="."]
+offset_left = -44.0
+offset_top = 55.0
+offset_right = -4.0
+offset_bottom = 100.0
+theme_override_font_sizes/font_size = 32
+text = "0"
+horizontal_alignment = 2
