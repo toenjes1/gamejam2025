@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://b1w0rdmttvhfn"]
+
+[ext_resource type="Texture2D" uid="uid://7ll5deyfl15q" path="res://icon.svg" id="1_l6cm7"]
+
+[sub_resource type="GDScript" id="GDScript_ekxnf"]
+resource_name = "main_menu"
+script/source = "extends Control
+
+func _on_start_button_up() -> void:
+	Global.switch_to_scene(\"world\")
+
+func _on_quit_button_up() -> void:
+	Global.end_game()
+"
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_ekxnf")
+
+[node name="StartButton" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 393.0
+offset_top = 121.0
+offset_right = 521.0
+offset_bottom = 249.0
+texture_normal = ExtResource("1_l6cm7")
+texture_pressed = ExtResource("1_l6cm7")
+texture_hover = ExtResource("1_l6cm7")
+
+[node name="QuitButton" type="TextureButton" parent="."]
+layout_mode = 0
+offset_left = 397.0
+offset_top = 369.0
+offset_right = 525.0
+offset_bottom = 497.0
+texture_normal = ExtResource("1_l6cm7")
+texture_pressed = ExtResource("1_l6cm7")
+texture_hover = ExtResource("1_l6cm7")
+
+[connection signal="button_up" from="StartButton" to="." method="_on_start_button_up"]
+[connection signal="button_up" from="QuitButton" to="." method="_on_quit_button_up"]

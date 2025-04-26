@@ -19,6 +19,11 @@ func update_card_z_values():
 	for idx in range(cards.size()):
 		cards[idx].set_sprite_z_index(idx)
 
+func empty_card_refs():
+	for idx in range(cards.size()):
+		cards[idx].queue_free()
+	cards = []
+
 func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
 		if cards[idx] != Global.node_being_dragged:
@@ -50,7 +55,7 @@ func add_card(new_card) -> void:
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uu4a1"]
-size = Vector2(611, 98)
+size = Vector2(610, 98)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a6gvt"]
 size = Vector2(958, 245)
@@ -59,7 +64,7 @@ size = Vector2(958, 245)
 script = SubResource("GDScript_uu4a1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(305.5, 49)
+position = Vector2(305, 49)
 shape = SubResource("RectangleShape2D_uu4a1")
 disabled = true
 

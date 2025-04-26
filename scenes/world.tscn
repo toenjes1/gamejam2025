@@ -1,9 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://brdcotededjl4"]
+[gd_scene load_steps=8 format=3 uid="uid://brdcotededjl4"]
 
-[ext_resource type="Texture2D" uid="uid://dumcbum6p1rju" path="res://assets/images/backdrop_elements/background.png" id="1_k0juu"]
+[ext_resource type="Texture2D" uid="uid://chqblap3qbbjh" path="res://assets/images/backdrop_elements/background.png" id="1_k0juu"]
 [ext_resource type="PackedScene" uid="uid://21g32hmxh8h5" path="res://prefabs/hand.tscn" id="1_nnsk1"]
 [ext_resource type="PackedScene" uid="uid://cdcpxpfojuaeq" path="res://prefabs/drop_spot.tscn" id="2_rwgxs"]
 [ext_resource type="PackedScene" uid="uid://dh0jkpep4cp4u" path="res://prefabs/enemy_hand.tscn" id="4_k0juu"]
+[ext_resource type="PackedScene" uid="uid://5imjke14lsdw" path="res://prefabs/menu.tscn" id="5_i7141"]
+[ext_resource type="Texture2D" uid="uid://7ll5deyfl15q" path="res://icon.svg" id="5_qfnet"]
 
 [sub_resource type="GDScript" id="GDScript_4wyf3"]
 resource_name = "puppetmaster"
@@ -28,7 +30,7 @@ texture = ExtResource("1_k0juu")
 position = Vector2(198, -34)
 
 [node name="hand" parent="." instance=ExtResource("1_nnsk1")]
-position = Vector2(200, 453)
+position = Vector2(207, 453)
 
 [node name="drop_spot" parent="." instance=ExtResource("2_rwgxs")]
 position = Vector2(260, 236)
@@ -38,3 +40,18 @@ position = Vector2(448, 237)
 
 [node name="drop_spot3" parent="." instance=ExtResource("2_rwgxs")]
 position = Vector2(640, 236)
+
+[node name="button_menu" type="TextureButton" parent="."]
+offset_left = 17.0
+offset_top = 10.0
+offset_right = 57.0
+offset_bottom = 50.0
+texture_normal = ExtResource("5_qfnet")
+texture_pressed = ExtResource("5_qfnet")
+texture_hover = ExtResource("5_qfnet")
+
+[node name="menu" parent="." instance=ExtResource("5_i7141")]
+visible = false
+z_index = 101
+
+[connection signal="button_up" from="button_menu" to="menu" method="_on_button_menu_pressed"]

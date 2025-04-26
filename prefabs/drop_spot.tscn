@@ -18,6 +18,14 @@ var enemy_cards = []
 func _ready() -> void:
 	Global.drop_spots.append(self)
 
+func empty_card_refs():
+	for idx in range(cards.size()):
+		cards[idx].queue_free()
+	for idx in range(enemy_cards.size()):
+		enemy_cards[idx].queue_free()
+	cards = []
+	enemy_cards = []
+
 func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
 		var desired_pos = global_position + init_size / 2 + Vector2(0.0, idx * vertical_offset)
