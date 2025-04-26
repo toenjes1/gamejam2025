@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://7ll5deyfl15q" path="res://icon.svg" id="5_qfnet"]
 [ext_resource type="Texture2D" uid="uid://ixsc14xb5hwo" path="res://assets/images/other/empty36x36.png" id="6_4mrxx"]
 [ext_resource type="Texture2D" uid="uid://vkofk253ua1s" path="res://animation/hourglass_animation.png" id="6_7r4gi"]
-[ext_resource type="PackedScene" path="res://prefabs/chrono_choice.tscn" id="7_i7141"]
+[ext_resource type="PackedScene" uid="uid://fpjlb2wopxam" path="res://prefabs/chrono_choice.tscn" id="7_i7141"]
 [ext_resource type="Texture2D" uid="uid://dueabum8mjrqb" path="res://assets/images/other/shadow.png" id="10_w7kh3"]
 
 [sub_resource type="GDScript" id="GDScript_4wyf3"]

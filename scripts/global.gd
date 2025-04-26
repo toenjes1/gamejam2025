@@ -141,7 +141,7 @@ func spawn_enemy_card() -> void:
 	enemy_hand.add_card(new_card)
 
 func enemy_play(card, spot) -> Node:
-	spot.enemy_cards.append(card)
+	spot.add_enemy_card(card)
 	var move_to = spot.get_child(2).global_position - card.size / 2 - Vector2(0, spot.enemy_cards.size() * 23)
 	enemy_hand.cards.erase(card)
 	played_cards.append(card)
@@ -157,4 +157,4 @@ func card_played(player_card) -> void:
 	player_card.dropped_location.calculate_sum(player_card.card_id)
 	drop_spot.calculate_enemy_sum(enemy_play[0].card_id)
 	player_card.dropped_location.set_type_display()
-	drop_spot.activate_trap_card(enemy_card_play.card_id)
+	drop_spot.activate_trap_card(enemy_play[0].card_id)

@@ -47,8 +47,8 @@ func choose_move(spots: Array, player_cards: Array) -> Array:
 	spots.shuffle()
 	for spot in spots:
 		for card in cards:
-			print(spot.base_value, Global.get_card_val(card))
-			if Global.get_card_val(card) == spot.base_value:
+			print(spot.base_value_enemy, Global.get_card_val(card))
+			if Global.get_card_val(card) == spot.base_value_enemy:
 				return [card, spot]
 	for spot in spots:
 		for card in cards:

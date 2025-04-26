@@ -44,7 +44,12 @@ func empty_card_refs():
 		enemy_cards[idx].queue_free()
 	cards = []
 	enemy_cards = []
-	
+
+func add_enemy_card(card):
+	enemy_cards.append(card)
+	if (not base_value_enemy) and Global.is_card_num(card):
+		base_value_enemy = Global.get_card_val(card)
+
 func special_is_restricted(card_id) -> bool:
 	if not Global.card_props[card_id]['is_number']:
 		if card_id == 'hal':
