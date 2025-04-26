@@ -29,6 +29,9 @@ func empty_card_refs():
 		enemy_cards[idx].queue_free()
 	cards = []
 	enemy_cards = []
+	
+func check_special_restriction(card_id) -> bool:
+	return Global.card_props[card_id]['is_number']
 
 func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
@@ -40,10 +43,10 @@ func _physics_process(delta: float) -> void:
 	
 	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
 	
-	if cards.is_empty():
+	if not check_special_restriction(Global.node_being_dragged.card_id) or not base_value:
 		restriction = true
 	else:
-		restriction = Global.card_props[cards[cards.size() - 1].card_id]['value'] == Global.card_props[Global.node_being_dragged.card_id]['value']
+		restriction = base_value == Global.card_props[Global.node_being_dragged.card_id]['value']
 	
 	if guard != is_highlighted and restriction:
 		_toggle_highlight()
@@ -51,10 +54,10 @@ func _physics_process(delta: float) -> void:
 func card_got_dropped(card) -> void:
 	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
 	
-	if cards.is_empty():
+	if not base_value or not check_special_restriction(card.card_id):
 		restriction = true
 	else:
-		restriction = Global.card_props[cards[cards.size() - 1].card_id]['value'] == Global.card_props[card.card_id]['value']
+		restriction = base_value == Global.card_props[card.card_id]['value']
 	
 	if guard and restriction:
 		cards.append(card)
@@ -66,7 +69,7 @@ func card_got_dropped(card) -> void:
 		$CollisionShape2D.shape.size.y = init_size.y + cards.size() * vertical_offset
 		$highlight.visible = false
 		is_highlighted = false
-		if Global.card_props[card.card_id]['is_number'] and cards.size() == 1:
+		if Global.card_props[card.card_id]['is_number'] and not base_value:
 			base_value = Global.card_props[card.card_id]['value']
 
 func _toggle_highlight():
@@ -83,7 +86,8 @@ func calculate_sum(new_card):
 		$sum.text = str(player_cards_sum)
 
 func set_type_display():
-	$type.text = str(base_value)
+	if base_value:
+		$type.text = str(base_value)
 	
 func calculate_enemy_sum(new_card):
 	if Global.card_props[new_card]['is_number']:
