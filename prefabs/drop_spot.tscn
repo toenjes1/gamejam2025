@@ -30,8 +30,35 @@ func empty_card_refs():
 	cards = []
 	enemy_cards = []
 	
-func check_special_restriction(card_id) -> bool:
-	return Global.card_props[card_id]['is_number']
+func special_is_restricted(card_id) -> bool:
+	if not Global.card_props[card_id]['is_number']:
+		if card_id == 'hal':
+			return false
+		return false
+	else:
+		return true
+
+func activate_trap_card(card_id) -> void:
+	if Global.card_props[card_id]['is_number']:
+		return
+	
+	if card_id == 'hal':
+		var new_sum = 0
+		for card in cards:
+			var is_number = card.half_texture()
+			if is_number:
+				new_sum += Global.card_props[card.card_id]['value']
+		player_cards_sum = new_sum
+		$sum.text = str(player_cards_sum)
+		
+		new_sum = 0
+		for card in enemy_cards:
+			var is_number = card.half_texture()
+			if is_number:
+				new_sum += Global.card_props[card.card_id]['value']
+		enemy_cards_sum = new_sum
+		$enemy_sum.text = str(enemy_cards_sum)
+		
 
 func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
@@ -43,7 +70,7 @@ func _physics_process(delta: float) -> void:
 	
 	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
 	
-	if not check_special_restriction(Global.node_being_dragged.card_id) or not base_value:
+	if not special_is_restricted(Global.node_being_dragged.card_id) or not base_value:
 		restriction = true
 	else:
 		restriction = base_value == Global.card_props[Global.node_being_dragged.card_id]['value']
@@ -54,11 +81,11 @@ func _physics_process(delta: float) -> void:
 func card_got_dropped(card) -> void:
 	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
 	
-	if not base_value or not check_special_restriction(card.card_id):
+	if not base_value or not special_is_restricted(card.card_id):
 		restriction = true
 	else:
 		restriction = base_value == Global.card_props[card.card_id]['value']
-	
+
 	if guard and restriction:
 		cards.append(card)
 		card.drop_spotted()
@@ -71,6 +98,7 @@ func card_got_dropped(card) -> void:
 		is_highlighted = false
 		if Global.card_props[card.card_id]['is_number'] and not base_value:
 			base_value = Global.card_props[card.card_id]['value']
+		activate_trap_card(card.card_id)
 
 func _toggle_highlight():
 	if is_highlighted:
