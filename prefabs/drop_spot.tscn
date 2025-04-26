@@ -8,17 +8,21 @@ script/source = "extends Area2D
 
 const snap_velocity = 15.0
 const vertical_offset = 23
+@onready var init_size = $CollisionShape2D.shape.size
 
 var cards = []
+var enemy_cards = []
 
 func _ready() -> void:
 	Global.drop_spots.append(self)
 	for i in range(5):
 		Global.spawn_card(Global.random_numb_card_id(Global.player_rng), true)
+		Mousebrain.spawn_player_card()
+		Mousebrain.spawn_enemy_card()
 
 func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
-		var desired_pos = global_position + $CollisionShape2D.shape.size / 2 + Vector2(0.0, idx * vertical_offset)
+		var desired_pos = global_position + init_size / 2 + Vector2(0.0, idx * vertical_offset)
 		cards[idx].global_position = lerp(cards[idx].global_position + cards[idx].size / 2, desired_pos, snap_velocity * delta) - cards[idx].size / 2
 
 func card_got_dropped(card) -> void:
@@ -29,6 +33,7 @@ func card_got_dropped(card) -> void:
 		card.set_sprite_z_index(cards.size() - 1)
 		card.get_parent().move_child(card, -1)
 		card.turn_to_back()
+		$CollisionShape2D.shape.size.y = init_size.y + cards.size() * vertical_offset
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5g2wd"]
@@ -44,4 +49,9 @@ shape = SubResource("RectangleShape2D_5g2wd")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(54, 75)
 scale = Vector2(2.3, 2.3)
+texture = ExtResource("1_mwg88")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(54, -75)
+scale = Vector2(2.26744, 2.26744)
 texture = ExtResource("1_mwg88")
