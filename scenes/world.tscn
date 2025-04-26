@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://21g32hmxh8h5" path="res://prefabs/hand.tscn" id="1_nnsk1"]
 [ext_resource type="PackedScene" uid="uid://cdcpxpfojuaeq" path="res://prefabs/drop_spot.tscn" id="2_rwgxs"]
 [ext_resource type="PackedScene" uid="uid://dh0jkpep4cp4u" path="res://prefabs/enemy_hand.tscn" id="4_k0juu"]
-[ext_resource type="PackedScene" uid="uid://5imjke14lsdw" path="res://prefabs/menu.tscn" id="5_i7141"]
+[ext_resource type="PackedScene" path="res://prefabs/menu.tscn" id="5_i7141"]
 [ext_resource type="Texture2D" uid="uid://7ll5deyfl15q" path="res://icon.svg" id="5_qfnet"]
 
 [sub_resource type="GDScript" id="GDScript_4wyf3"]
@@ -52,5 +52,6 @@ texture_hover = ExtResource("5_qfnet")
 
 [node name="menu" parent="." instance=ExtResource("5_i7141")]
 visible = false
+z_index = 101
 
 [connection signal="button_up" from="button_menu" to="menu" method="_on_button_menu_pressed"]
