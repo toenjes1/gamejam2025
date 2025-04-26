@@ -146,5 +146,5 @@ func card_played(player_card) -> void:
 	player_card.turn_to_front()
 	played_cards[played_cards.size() - 1].turn_to_front()
 	player_card.dropped_location.calculate_sum(player_card.card_id)
-	player_card.dropped_location.set_type_display()
 	drop_spot.calculate_enemy_sum(enemy_card_play.card_id)
+	player_card.dropped_location.set_type_display()
