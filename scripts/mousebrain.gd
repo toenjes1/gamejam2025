@@ -2,6 +2,7 @@ extends Node
 
 const card_prefab = preload("res://prefabs/card.tscn")
 var hand
+var enemy_hand
 var drop_spots = []
 
 var node_being_dragged: Node = null

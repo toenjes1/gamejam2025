@@ -1,11 +1,15 @@
-[gd_scene load_steps=4 format=3 uid="uid://brdcotededjl4"]
+[gd_scene load_steps=5 format=3 uid="uid://brdcotededjl4"]
 
 [ext_resource type="PackedScene" uid="uid://21g32hmxh8h5" path="res://prefabs/hand.tscn" id="1_nnsk1"]
 [ext_resource type="PackedScene" uid="uid://cdcpxpfojuaeq" path="res://prefabs/drop_spot.tscn" id="2_rwgxs"]
 [ext_resource type="PackedScene" uid="uid://cgrhqxhog24tp" path="res://prefabs/enemy_drop_spot.tscn" id="3_4wyf3"]
+[ext_resource type="PackedScene" uid="uid://cdc5satbk5akb" path="res://prefabs/enemy_hand.tscn" id="4_k0juu"]
 
 [node name="world" type="Node2D"]
 position = Vector2(1, -9)
+
+[node name="enemy_hand" parent="." instance=ExtResource("4_k0juu")]
+position = Vector2(265, -27)
 
 [node name="hand" parent="." instance=ExtResource("1_nnsk1")]
 position = Vector2(266, 486)
