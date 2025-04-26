@@ -5,14 +5,14 @@ resource_name = "drop_spot"
 script/source = "extends Area2D
 
 const snap_velocity = 15.0
-const vertical_offset = 15
+const vertical_offset = 23
 
 var cards = []
 
 func _ready() -> void:
-	Mousebrain.drop_spots.append(self)
+	Global.drop_spots.append(self)
 	for i in range(5):
-		Mousebrain.spawn_card()
+		Global.spawn_card(Global.random_numb_card_id(Global.player_rng), true)
 
 func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
@@ -25,6 +25,7 @@ func card_got_dropped(card) -> void:
 		card.drop_spotted()
 		card.set_sprite_z_index(cards.size() - 1)
 		card.get_parent().move_child(card, -1)
+		card.turn_to_back()
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5g2wd"]
