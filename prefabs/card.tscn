@@ -109,6 +109,7 @@ func drag_logic(delta: float) -> void:
 func drop_spotted() -> void:
 	is_drop_spotted = true
 	got_drop_spotted.emit(self)
+	Global.card_played()
 
 func _on_mouse_entered() -> void:
 	mouse_in = true

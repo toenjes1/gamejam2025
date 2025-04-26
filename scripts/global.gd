@@ -33,6 +33,8 @@ const card_prefab = preload("res://prefabs/card.tscn")
 var hand
 var enemy_hand
 var drop_spots = []
+var played_cards = []
+var played_card_positions = []
 
 var node_being_dragged: Node = null
 var node_being_dragged_is_player: int = -1
@@ -49,6 +51,12 @@ func _ready() -> void:
 			spec_card_ids.append(card_id)
 		if card_props[card_id].has('texture'):
 			card_props[card_id].texture = load(card_base_path + card_props[card_id].texture)
+
+func _physics_process(delta: float) -> void:
+	if played_cards.is_empty():
+		return
+	for idx in range(played_cards.size()):
+		played_cards[idx].global_position = lerp(played_cards[idx].global_position, played_card_positions[idx], 15 * delta)
 
 func random_numb_card_id(rng: RandomNumberGenerator) -> String:
 	return numb_card_ids[rng.randi_range(0, numb_card_ids.size() - 1)]
@@ -80,3 +88,13 @@ func spawn_enemy_card() -> void:
 	var new_card = spawn_card(random_numb_card_id(player_rng), false)
 	new_card.player_card = false
 	enemy_hand.add_card(new_card)
+
+func enemy_play(card, idx) -> void:
+	var move_to = drop_spots[idx].get_child(2).global_position - card.size / 2 - Vector2(0, played_cards.size() * 23)
+	enemy_hand.cards.erase(card)
+	played_cards.append(card)
+	played_card_positions.append(move_to)
+
+func card_played() -> void:
+	var enemy_card_play = enemy_hand.choose_card()
+	enemy_play(enemy_card_play, 0)
