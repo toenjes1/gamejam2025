@@ -1,9 +1,10 @@
-[gd_scene load_steps=45 format=3 uid="uid://brdcotededjl4"]
+[gd_scene load_steps=46 format=3 uid="uid://brdcotededjl4"]
 
 [ext_resource type="Texture2D" uid="uid://chqblap3qbbjh" path="res://assets/images/backdrop_elements/background.png" id="1_k0juu"]
 [ext_resource type="PackedScene" uid="uid://21g32hmxh8h5" path="res://prefabs/hand.tscn" id="1_nnsk1"]
 [ext_resource type="PackedScene" uid="uid://cdcpxpfojuaeq" path="res://prefabs/drop_spot.tscn" id="2_rwgxs"]
 [ext_resource type="PackedScene" uid="uid://dh0jkpep4cp4u" path="res://prefabs/enemy_hand.tscn" id="4_k0juu"]
+[ext_resource type="Texture2D" uid="uid://q7cjhwxya77o" path="res://assets/images/buttons/exit.png" id="5_e3hyu"]
 [ext_resource type="PackedScene" uid="uid://5imjke14lsdw" path="res://prefabs/menu.tscn" id="5_i7141"]
 [ext_resource type="Texture2D" uid="uid://7ll5deyfl15q" path="res://icon.svg" id="5_qfnet"]
 [ext_resource type="Texture2D" uid="uid://ixsc14xb5hwo" path="res://assets/images/other/empty36x36.png" id="6_4mrxx"]
@@ -340,13 +341,14 @@ position = Vector2(448, 237)
 position = Vector2(640, 236)
 
 [node name="button_menu" type="TextureButton" parent="."]
-offset_left = 912.0
-offset_top = -40.0
-offset_right = 1040.0
-offset_bottom = 88.0
-texture_normal = ExtResource("5_qfnet")
-texture_pressed = ExtResource("5_qfnet")
-texture_hover = ExtResource("5_qfnet")
+offset_left = 964.0
+offset_top = 4.0
+offset_right = 992.0
+offset_bottom = 32.0
+scale = Vector2(2, 2)
+texture_normal = ExtResource("5_e3hyu")
+texture_pressed = ExtResource("5_e3hyu")
+texture_hover = ExtResource("5_e3hyu")
 
 [node name="button_end_round" type="TextureButton" parent="."]
 offset_left = 866.0
@@ -357,11 +359,6 @@ texture_normal = ExtResource("5_qfnet")
 texture_pressed = ExtResource("5_qfnet")
 texture_hover = ExtResource("5_qfnet")
 
-[node name="shadow_hourglass" type="Sprite2D" parent="."]
-position = Vector2(864, 262)
-scale = Vector2(2, 2)
-texture = ExtResource("10_w7kh3")
-
 [node name="menu" parent="." instance=ExtResource("5_i7141")]
 visible = false
 z_index = 101
@@ -369,6 +366,11 @@ z_index = 101
 [node name="chrono_choice" parent="." instance=ExtResource("7_i7141")]
 visible = false
 z_index = 101
+
+[node name="shadow_hourglass" type="Sprite2D" parent="."]
+position = Vector2(864, 262)
+scale = Vector2(2, 2)
+texture = ExtResource("10_w7kh3")
 
 [node name="button_chrono" type="TextureButton" parent="."]
 offset_left = 828.0
@@ -403,8 +405,8 @@ frame_progress = 0.546459
 
 [connection signal="button_up" from="button_menu" to="menu" method="_on_button_menu_pressed"]
 [connection signal="button_up" from="button_end_round" to="hand" method="_on_button_end_round_button_up"]
-[connection signal="button_up" from="button_chrono" to="button_chrono" method="_on_button_up"]
 [connection signal="button_up" from="button_chrono" to="chrono_choice" method="_on_button_chrono_pressed"]
+[connection signal="button_up" from="button_chrono" to="button_chrono" method="_on_button_up"]
 [connection signal="mouse_entered" from="button_chrono" to="button_chrono" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="button_chrono" to="button_chrono" method="_on_mouse_exited"]
 [connection signal="animation_looped" from="button_chrono/animation_hourglass" to="button_chrono" method="_on_hourglass_animation_looped"]
