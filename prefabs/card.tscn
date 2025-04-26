@@ -15,7 +15,7 @@ const rotation_velocity = 12.0
 const rotation_stiffness = 0.85
 @onready var card_scale = $Sprite2D.scale
 
-var in_hand_z = 0
+var in_hand_z = möm
 
 var mouse_in: bool = false
 var is_dragging: bool = false
@@ -26,7 +26,7 @@ func _physics_process(delta: float) -> void:
 
 func set_sprite_z_index(z):
 	$Sprite2D.z_index = z + möm
-	in_hand_z = z
+	in_hand_z = z + möm
 
 func drag_logic(delta: float) -> void:
 	$Sprite2D/shadow.position = Vector2(-12, 12).rotated($Sprite2D.rotation)

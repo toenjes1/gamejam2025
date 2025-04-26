@@ -1,4 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://cdcpxpfojuaeq"]
+[gd_scene load_steps=4 format=3 uid="uid://cdcpxpfojuaeq"]
+
+[ext_resource type="Texture2D" uid="uid://31opkp4ms3cq" path="res://assets/images/backdrop_elements/border.png" id="1_mwg88"]
 
 [sub_resource type="GDScript" id="GDScript_5g2wd"]
 resource_name = "drop_spot"
@@ -16,11 +18,12 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
-		var desired_pos = global_position + Vector2(0.0, idx * vertical_offset)
-		cards[idx].global_position = lerp(cards[idx].global_position, desired_pos, snap_velocity * delta)
+		var desired_pos = global_position + $CollisionShape2D.shape.size / 2 + Vector2(0.0, idx * vertical_offset)
+		cards[idx].global_position = lerp(cards[idx].global_position + cards[idx].size / 2, desired_pos, snap_velocity * delta) - cards[idx].size / 2
 
 func card_got_dropped(card) -> void:
-	if Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position()):
+	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
+	if guard:
 		cards.append(card)
 		card.drop_spotted()
 		card.set_sprite_z_index(cards.size() - 1)
@@ -28,10 +31,16 @@ func card_got_dropped(card) -> void:
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5g2wd"]
-size = Vector2(116, 152)
+size = Vector2(108, 149)
 
 [node name="drop_spot" type="Area2D"]
 script = SubResource("GDScript_5g2wd")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(54, 75)
 shape = SubResource("RectangleShape2D_5g2wd")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(54, 75)
+scale = Vector2(2.3, 2.3)
+texture = ExtResource("1_mwg88")
