@@ -31,6 +31,7 @@ func set_sprite_z_index(z):
 func drag_logic(delta: float) -> void:
 	$Sprite2D/shadow.position = Vector2(-12, 12).rotated($Sprite2D.rotation)
 	if is_drop_spotted:
+		$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)
 		if mouse_in:
 			_change_scale(card_scale * 1.1)
 			$Sprite2D.z_index = 100
