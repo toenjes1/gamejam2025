@@ -38,6 +38,8 @@ const card_prefab = preload("res://prefabs/card.tscn")
 var hand = null
 var enemy_hand = null
 var drop_spots = []
+var played_cards = []
+var played_card_positions = []
 
 var node_being_dragged: Node = null
 var node_being_dragged_is_player: int = -1
@@ -68,6 +70,12 @@ func switch_to_scene(scene_name: String) -> void:
 
 func end_game() -> void:
 	get_tree().quit()
+
+func _physics_process(delta: float) -> void:
+	if played_cards.is_empty():
+		return
+	for idx in range(played_cards.size()):
+		played_cards[idx].global_position = lerp(played_cards[idx].global_position, played_card_positions[idx], 15 * delta)
 
 func random_numb_card_id(rng: RandomNumberGenerator) -> String:
 	return numb_card_ids[rng.randi_range(0, numb_card_ids.size() - 1)]
@@ -108,6 +116,7 @@ func spawn_player_card() -> void:
 		player_bag = create_bag(player_seed)
 	var new_card = spawn_card(player_bag[0], true)
 	player_bag.remove_at(0)
+	new_card.is_player_card = true
 	new_card.got_dropped.connect(hand.card_got_dropped)
 	new_card.got_drop_spotted.connect(hand.remove_card)
 	for drop_spot in drop_spots:
@@ -119,4 +128,23 @@ func spawn_enemy_card() -> void:
 		enemy_bag = create_bag(enemy_seed)
 	var new_card = spawn_card(enemy_bag[0], true)
 	enemy_bag.remove_at(0)
+	new_card.is_player_card = false
 	enemy_hand.add_card(new_card)
+
+func enemy_play(card, idx) -> Node:
+	var target_spot = drop_spots[idx]
+	var move_to = target_spot.get_child(2).global_position - card.size / 2 - Vector2(0, played_cards.size() * 23)
+	enemy_hand.cards.erase(card)
+	played_cards.append(card)
+	played_card_positions.append(move_to)
+	return target_spot
+
+func card_played(player_card) -> void:
+	var enemy_card_play = enemy_hand.choose_card()
+	var drop_spot = enemy_play(enemy_card_play, 0)
+	await get_tree().create_timer(1).timeout
+	player_card.turn_to_front()
+	played_cards[played_cards.size() - 1].turn_to_front()
+	player_card.dropped_location.calculate_sum(player_card.card_id)
+	player_card.dropped_location.set_type_display()
+	drop_spot.calculate_enemy_sum(enemy_card_play.card_id)

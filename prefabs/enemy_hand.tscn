@@ -40,6 +40,9 @@ func calculate_position(idx: float) -> Vector2:
 
 func add_card(new_card) -> void:
 	cards.append(new_card)
+
+func choose_card() -> Node:
+	return cards[0]
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uu4a1"]
