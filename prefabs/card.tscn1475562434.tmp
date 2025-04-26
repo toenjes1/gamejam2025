@@ -1,0 +1,117 @@
+[gd_scene load_steps=3 format=3 uid="uid://b8wf8j11ttsrm"]
+
+[ext_resource type="Texture2D" uid="uid://b3ikxfmarbdaa" path="res://assets/images/cards/back.png" id="1_8g2q7"]
+
+[sub_resource type="GDScript" id="GDScript_5tooj"]
+resource_name = "card"
+script/source = "extends Control
+
+signal got_dropped(card)
+signal got_drop_spotted(card)
+
+const möm = 10
+const drag_velocity = 22.0
+const rotation_velocity = 12.0
+const rotation_stiffness = 0.85
+@onready var card_scale = $Sprite2D.scale
+
+var in_hand_z = 0
+
+var mouse_in: bool = false
+var is_dragging: bool = false
+var is_drop_spotted: bool = false
+
+func _physics_process(delta: float) -> void:
+	drag_logic(delta)
+
+func set_sprite_z_index(z):
+	$Sprite2D.z_index = z + möm
+	in_hand_z = z
+
+func drag_logic(delta: float) -> void:
+	$Sprite2D/shadow.position = Vector2(-12, 12).rotated($Sprite2D.rotation)
+	if is_drop_spotted:
+		if mouse_in:
+			_change_scale(card_scale * 1.1)
+			$Sprite2D.z_index = 100
+		else:
+			_change_scale(card_scale)
+			$Sprite2D.z_index = in_hand_z
+		return
+		
+		
+	if ((mouse_in or is_dragging)
+		and (Global.node_being_dragged == null or Global.node_being_dragged == self)):
+		if Input.is_action_pressed(\"click\"):
+			global_position = lerp(global_position, 
+				get_global_mouse_position() - (size/2.0), drag_velocity*delta)
+			_change_scale(card_scale * 1.3)
+			_set_rotation(delta)
+			$Sprite2D.z_index = 100
+			is_dragging = true
+			Global.node_being_dragged = self
+		else:
+			_change_scale(card_scale * 1.1)
+			$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)
+			is_dragging = false
+			if Global.node_being_dragged == self:
+				Global.node_being_dragged = null
+				$Sprite2D.z_index = in_hand_z
+				got_dropped.emit(self)
+		return
+	
+	if $Sprite2D.rotation_degrees != 0.0:
+		$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)
+	_change_scale(card_scale)
+
+func drop_spotted() -> void:
+	is_drop_spotted = true
+	got_drop_spotted.emit(self)
+
+func _on_mouse_entered() -> void:
+	mouse_in = true
+func _on_mouse_exited() -> void:
+	mouse_in = false
+
+@onready var current_goal_scale: Vector2 = card_scale
+var scale_tween: Tween
+func _change_scale(desired_scale: Vector2):
+	if desired_scale == current_goal_scale:
+		return
+	
+	if scale_tween:
+		scale_tween.kill()
+	scale_tween = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	scale_tween.tween_property($Sprite2D, \"scale\", desired_scale, 0.125)
+	
+	current_goal_scale = desired_scale
+
+var last_pos: Vector2
+var max_card_rotation: float = 12.5
+func _set_rotation(delta: float) -> void:
+	var desired_rotation: float = clamp((global_position - last_pos).x * rotation_stiffness, -max_card_rotation, max_card_rotation)
+	$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, desired_rotation, rotation_velocity * delta)
+	
+	last_pos = global_position
+"
+
+[node name="card" type="Control"]
+custom_minimum_size = Vector2(66, 98)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 66.0
+offset_bottom = 98.0
+script = SubResource("GDScript_5tooj")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(33, 49)
+scale = Vector2(2, 2)
+texture = ExtResource("1_8g2q7")
+
+[node name="shadow" type="Sprite2D" parent="Sprite2D"]
+modulate = Color(0, 0, 0, 0)
+show_behind_parent = true
+texture = ExtResource("1_8g2q7")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

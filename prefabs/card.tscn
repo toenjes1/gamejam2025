@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://b8wf8j11ttsrm"]
+[gd_scene load_steps=7 format=3 uid="uid://b8wf8j11ttsrm"]
 
 [ext_resource type="Texture2D" uid="uid://b3ikxfmarbdaa" path="res://assets/images/cards/back.png" id="1_8g2q7"]
 
@@ -9,20 +9,57 @@ script/source = "extends Control
 signal got_dropped(card)
 signal got_drop_spotted(card)
 
+const back_texture = preload(\"res://assets/images/cards/back.png\")
+
 const möm = 10
 const drag_velocity = 22.0
 const rotation_velocity = 12.0
 const rotation_stiffness = 0.85
+
+@onready var anim_player = $Sprite2D/AnimationPlayer
 @onready var card_scale = $Sprite2D.scale
 
 var in_hand_z = möm
+var card_id
+
 
 var mouse_in: bool = false
 var is_dragging: bool = false
 var is_drop_spotted: bool = false
+var show_front: bool = false
+
+var front_texture
 
 func _physics_process(delta: float) -> void:
 	drag_logic(delta)
+
+func set_card_id(new_card_id):
+	card_id = new_card_id
+
+func set_sprite_texture(new_texture):
+	front_texture = new_texture
+	reset_sprite_texture()
+
+func reset_sprite_texture():
+	$Sprite2D.texture = front_texture if show_front else back_texture
+
+func turn():
+	anim_player.play('turn')
+
+func _on_animation_finished(anim_name: StringName) -> void:
+	if anim_name == 'turn':
+		reset_sprite_texture()
+		anim_player.play('turn_reverse')
+
+func turn_to_back():
+	if show_front:
+		show_front = false
+		turn()
+
+func turn_to_front():
+	if !show_front:
+		show_front = true
+		turn()
 
 func set_sprite_z_index(z):
 	$Sprite2D.z_index = z + möm
@@ -38,11 +75,13 @@ func drag_logic(delta: float) -> void:
 		else:
 			_change_scale(card_scale)
 			$Sprite2D.z_index = in_hand_z
+		if $Sprite2D.rotation_degrees != 0.0:
+			$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)
 		return
 		
 		
 	if ((mouse_in or is_dragging)
-		and (Mousebrain.node_being_dragged == null or Mousebrain.node_being_dragged == self)):
+		and (Global.node_being_dragged == null or Global.node_being_dragged == self)):
 		if Input.is_action_pressed(\"click\"):
 			global_position = lerp(global_position, 
 				get_global_mouse_position() - (size/2.0), drag_velocity*delta)
@@ -50,13 +89,13 @@ func drag_logic(delta: float) -> void:
 			_set_rotation(delta)
 			$Sprite2D.z_index = 100
 			is_dragging = true
-			Mousebrain.node_being_dragged = self
+			Global.node_being_dragged = self
 		else:
 			_change_scale(card_scale * 1.1)
 			$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)
 			is_dragging = false
-			if Mousebrain.node_being_dragged == self:
-				Mousebrain.node_being_dragged = null
+			if Global.node_being_dragged == self:
+				Global.node_being_dragged = null
 				$Sprite2D.z_index = in_hand_z
 				got_dropped.emit(self)
 		return
@@ -96,6 +135,60 @@ func _set_rotation(delta: float) -> void:
 	last_pos = global_position
 "
 
+[sub_resource type="Animation" id="Animation_8g2q7"]
+resource_name = "turn"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(2.21914, 1),
+"update": 0,
+"values": [2.0, 1e-05]
+}
+
+[sub_resource type="Animation" id="Animation_5tooj"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [2.0]
+}
+
+[sub_resource type="Animation" id="Animation_hyht8"]
+resource_name = "turn_reverse"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(0.435275, 1),
+"update": 0,
+"values": [1e-05, 2.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_8m1pn"]
+_data = {
+&"RESET": SubResource("Animation_5tooj"),
+&"turn": SubResource("Animation_8g2q7"),
+&"turn_reverse": SubResource("Animation_hyht8")
+}
+
 [node name="card" type="Control"]
 custom_minimum_size = Vector2(66, 98)
 layout_mode = 3
@@ -114,5 +207,11 @@ modulate = Color(0, 0, 0, 0)
 show_behind_parent = true
 texture = ExtResource("1_8g2q7")
 
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite2D"]
+libraries = {
+&"": SubResource("AnimationLibrary_8m1pn")
+}
+
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="animation_finished" from="Sprite2D/AnimationPlayer" to="." method="_on_animation_finished"]
