@@ -2,16 +2,26 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dumcbum6p1rju"
+<<<<<<<< HEAD:assets/images/backdrop_elements/border_hover.png.import
+uid="uid://8y1qkdwu7n2l"
+path="res://.godot/imported/border_hover.png-fc49559b08236b59c636772220f779f0.ctex"
+========
+uid="uid://bbdhuh8f3c30i"
 path="res://.godot/imported/background.png-d37d365867fa556947c9bc6bff5862a2.ctex"
+>>>>>>>> refs/remotes/origin/main:assets/images/backdrop_elements/background.png.import
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
+<<<<<<<< HEAD:assets/images/backdrop_elements/border_hover.png.import
+source_file="res://assets/images/backdrop_elements/border_hover.png"
+dest_files=["res://.godot/imported/border_hover.png-fc49559b08236b59c636772220f779f0.ctex"]
+========
 source_file="res://assets/images/backdrop_elements/background.png"
 dest_files=["res://.godot/imported/background.png-d37d365867fa556947c9bc6bff5862a2.ctex"]
+>>>>>>>> refs/remotes/origin/main:assets/images/backdrop_elements/background.png.import
 
 [params]
 

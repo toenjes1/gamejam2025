@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cdcpxpfojuaeq"]
 
 [ext_resource type="Texture2D" uid="uid://31opkp4ms3cq" path="res://assets/images/backdrop_elements/border.png" id="1_mwg88"]
-[ext_resource type="Texture2D" uid="uid://8y1qkdwu7n2l" path="res://assets/images/backdrop_elements/border_hover.png" id="2_lx47d"]
+[ext_resource type="Texture2D" uid="uid://dkw1k3h357qhx" path="res://assets/images/backdrop_elements/border_hover.png" id="2_lx47d"]
 
 [sub_resource type="GDScript" id="GDScript_5g2wd"]
 resource_name = "drop_spot"
@@ -35,6 +35,8 @@ func card_got_dropped(card) -> void:
 		card.get_parent().move_child(card, -1)
 		card.turn_to_back()
 		$CollisionShape2D.shape.size.y = init_size.y + cards.size() * vertical_offset
+		$highlight.visible = false
+		is_highlighted = false
 
 func _toggle_highlight():
 	if !Global.node_being_dragged or Global.node_being_dragged_is_player != 1:
@@ -42,11 +44,9 @@ func _toggle_highlight():
 	if is_highlighted:
 		$highlight.visible = false
 		is_highlighted = false
-		print(\"false\")
 	else:
 		$highlight.visible = true
 		is_highlighted = true
-		print(\"true\")
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5g2wd"]
