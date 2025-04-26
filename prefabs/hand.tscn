@@ -71,6 +71,6 @@ disabled = true
 [node name="dropArea" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="dropArea"]
-position = Vector2(310, 35.5)
+position = Vector2(305, 35.5)
 shape = SubResource("RectangleShape2D_a6gvt")
 disabled = true
