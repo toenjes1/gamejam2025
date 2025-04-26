@@ -1,5 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://brdcotededjl4"]
+[gd_scene load_steps=6 format=3 uid="uid://brdcotededjl4"]
 
+[ext_resource type="Texture2D" uid="uid://bbdhuh8f3c30i" path="res://assets/images/backdrop_elements/background.png" id="1_k0juu"]
 [ext_resource type="PackedScene" uid="uid://21g32hmxh8h5" path="res://prefabs/hand.tscn" id="1_nnsk1"]
 [ext_resource type="PackedScene" uid="uid://cdcpxpfojuaeq" path="res://prefabs/drop_spot.tscn" id="2_rwgxs"]
 [ext_resource type="PackedScene" uid="uid://dh0jkpep4cp4u" path="res://prefabs/enemy_hand.tscn" id="4_k0juu"]
@@ -17,17 +18,23 @@ func _ready():
 [node name="world" type="Node2D"]
 script = SubResource("GDScript_4wyf3")
 
+[node name="Background" type="Sprite2D" parent="."]
+z_index = -1
+position = Vector2(512, 288)
+scale = Vector2(2, 2)
+texture = ExtResource("1_k0juu")
+
 [node name="enemy_hand" parent="." instance=ExtResource("4_k0juu")]
-position = Vector2(265, -27)
+position = Vector2(198, -34)
 
 [node name="hand" parent="." instance=ExtResource("1_nnsk1")]
-position = Vector2(266, 486)
+position = Vector2(200, 453)
 
 [node name="drop_spot" parent="." instance=ExtResource("2_rwgxs")]
-position = Vector2(319, 248)
+position = Vector2(260, 236)
 
 [node name="drop_spot2" parent="." instance=ExtResource("2_rwgxs")]
-position = Vector2(507, 249)
+position = Vector2(448, 237)
 
 [node name="drop_spot3" parent="." instance=ExtResource("2_rwgxs")]
-position = Vector2(699, 248)
+position = Vector2(640, 236)

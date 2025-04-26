@@ -38,12 +38,12 @@ func add_card(new_card) -> void:
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uu4a1"]
-size = Vector2(611, 125)
+size = Vector2(611, 98)
 
 [node name="enemy_hand" type="Area2D"]
 script = SubResource("GDScript_uu4a1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(305.5, 62.5)
+position = Vector2(305.5, 49)
 shape = SubResource("RectangleShape2D_uu4a1")
 disabled = true
