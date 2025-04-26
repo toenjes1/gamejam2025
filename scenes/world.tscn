@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://brdcotededjl4"]
+[gd_scene load_steps=45 format=3 uid="uid://brdcotededjl4"]
 
 [ext_resource type="Texture2D" uid="uid://chqblap3qbbjh" path="res://assets/images/backdrop_elements/background.png" id="1_k0juu"]
 [ext_resource type="PackedScene" uid="uid://21g32hmxh8h5" path="res://prefabs/hand.tscn" id="1_nnsk1"]
@@ -19,6 +19,26 @@ func _ready():
 	for i in range(5):
 		Global.spawn_player_card()
 		Global.spawn_enemy_card()
+"
+
+[sub_resource type="GDScript" id="GDScript_w7kh3"]
+resource_name = "button_chrono"
+script/source = "extends TextureButton
+
+@onready var hourglass = $animation_hourglass
+
+var hourglass_is_spinning = false
+
+func _on_mouse_entered() -> void:
+	hourglass_is_spinning = true
+	hourglass.play(\"default\")
+
+func _on_mouse_exited() -> void:
+	hourglass_is_spinning = false
+
+func _on_hourglass_animation_looped() -> void:
+	if !hourglass_is_spinning:
+		hourglass.stop()
 "
 
 [sub_resource type="Animation" id="Animation_w7kh3"]
@@ -346,6 +366,7 @@ offset_bottom = 246.0
 texture_normal = ExtResource("6_4mrxx")
 texture_pressed = ExtResource("6_4mrxx")
 texture_hover = ExtResource("6_4mrxx")
+script = SubResource("GDScript_w7kh3")
 metadata/_edit_use_anchors_ = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="button_chrono"]
@@ -366,8 +387,7 @@ process_material = SubResource("ParticleProcessMaterial_i7141")
 position = Vector2(36, 36)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_817gm")
-autoplay = "default"
-frame_progress = 0.970114
+frame_progress = 0.546459
 
 [node name="menu" parent="." instance=ExtResource("5_i7141")]
 visible = false
@@ -375,6 +395,10 @@ z_index = 101
 
 [node name="chrono_choice" parent="." instance=ExtResource("7_i7141")]
 visible = false
+z_index = 101
 
 [connection signal="button_up" from="button_menu" to="menu" method="_on_button_menu_pressed"]
 [connection signal="button_up" from="button_chrono" to="chrono_choice" method="_on_button_chrono_pressed"]
+[connection signal="mouse_entered" from="button_chrono" to="button_chrono" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="button_chrono" to="button_chrono" method="_on_mouse_exited"]
+[connection signal="animation_looped" from="button_chrono/animation_hourglass" to="button_chrono" method="_on_hourglass_animation_looped"]
