@@ -143,7 +143,6 @@ func spawn_enemy_card() -> void:
 
 func enemy_play(card, spot) -> Node:
 	spot.add_enemy_card(card)
-	spot.enemy_cards.append(card)
 	var move_to = spot.get_child(2).global_position - card.size / 2 - Vector2(0, (spot.enemy_cards.size() - 1) * 23)
 	enemy_hand.cards.erase(card)
 	played_cards.append(card)
