@@ -1,6 +1,12 @@
-[gd_scene load_steps=3 format=3 uid="uid://b1w0rdmttvhfn"]
+[gd_scene load_steps=9 format=3 uid="uid://b1w0rdmttvhfn"]
 
-[ext_resource type="Texture2D" uid="uid://7ll5deyfl15q" path="res://icon.svg" id="1_l6cm7"]
+[ext_resource type="Texture2D" uid="uid://bs3ug5gq700iy" path="res://assets/images/buttons/button_start.png" id="1_rtw2f"]
+[ext_resource type="Texture2D" uid="uid://chqblap3qbbjh" path="res://assets/images/backdrop_elements/background.png" id="2_ekxnf"]
+[ext_resource type="Texture2D" uid="uid://byxi2yingkohk" path="res://assets/images/buttons/button_exit_press.png" id="2_oa1go"]
+[ext_resource type="Texture2D" uid="uid://braxvopkv28pw" path="res://assets/images/buttons/button_start_press.png" id="2_tbmy8"]
+[ext_resource type="Texture2D" uid="uid://hbc1qk7ydtke" path="res://assets/images/buttons/button_start_hover.png" id="3_tbmy8"]
+[ext_resource type="Texture2D" uid="uid://d0s041q168hvf" path="res://assets/images/buttons/button_exit.png" id="4_jk1qb"]
+[ext_resource type="Texture2D" uid="uid://d4d7jmkq73k0w" path="res://assets/images/buttons/button_exit_hover.png" id="5_5dd4i"]
 
 [sub_resource type="GDScript" id="GDScript_ekxnf"]
 resource_name = "main_menu"
@@ -24,23 +30,31 @@ script = SubResource("GDScript_ekxnf")
 
 [node name="StartButton" type="TextureButton" parent="."]
 layout_mode = 0
-offset_left = 393.0
-offset_top = 121.0
-offset_right = 521.0
-offset_bottom = 249.0
-texture_normal = ExtResource("1_l6cm7")
-texture_pressed = ExtResource("1_l6cm7")
-texture_hover = ExtResource("1_l6cm7")
+offset_left = 385.0
+offset_top = 341.0
+offset_right = 522.0
+offset_bottom = 368.0
+scale = Vector2(2, 2)
+texture_normal = ExtResource("1_rtw2f")
+texture_pressed = ExtResource("2_tbmy8")
+texture_hover = ExtResource("3_tbmy8")
 
 [node name="QuitButton" type="TextureButton" parent="."]
 layout_mode = 0
-offset_left = 397.0
-offset_top = 369.0
-offset_right = 525.0
-offset_bottom = 497.0
-texture_normal = ExtResource("1_l6cm7")
-texture_pressed = ExtResource("1_l6cm7")
-texture_hover = ExtResource("1_l6cm7")
+offset_left = 385.0
+offset_top = 414.0
+offset_right = 522.0
+offset_bottom = 441.0
+scale = Vector2(2, 2)
+texture_normal = ExtResource("4_jk1qb")
+texture_pressed = ExtResource("2_oa1go")
+texture_hover = ExtResource("5_5dd4i")
+
+[node name="Background" type="Sprite2D" parent="."]
+z_index = -1
+position = Vector2(512, 288)
+scale = Vector2(2, 2)
+texture = ExtResource("2_ekxnf")
 
 [connection signal="button_up" from="StartButton" to="." method="_on_start_button_up"]
 [connection signal="button_up" from="QuitButton" to="." method="_on_quit_button_up"]

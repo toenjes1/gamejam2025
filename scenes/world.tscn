@@ -1,14 +1,17 @@
-[gd_scene load_steps=45 format=3 uid="uid://brdcotededjl4"]
+[gd_scene load_steps=50 format=3 uid="uid://brdcotededjl4"]
 
-[ext_resource type="Texture2D" uid="uid://chqblap3qbbjh" path="res://assets/images/backdrop_elements/background.png" id="1_k0juu"]
+[ext_resource type="Texture2D" uid="uid://cyje0wsg1ufd3" path="res://assets/images/backdrop_elements/background_aermel.png" id="1_jhx03"]
 [ext_resource type="PackedScene" uid="uid://21g32hmxh8h5" path="res://prefabs/hand.tscn" id="1_nnsk1"]
 [ext_resource type="PackedScene" uid="uid://cdcpxpfojuaeq" path="res://prefabs/drop_spot.tscn" id="2_rwgxs"]
 [ext_resource type="PackedScene" uid="uid://dh0jkpep4cp4u" path="res://prefabs/enemy_hand.tscn" id="4_k0juu"]
+[ext_resource type="Texture2D" uid="uid://q7cjhwxya77o" path="res://assets/images/buttons/exit.png" id="5_e3hyu"]
 [ext_resource type="PackedScene" uid="uid://5imjke14lsdw" path="res://prefabs/menu.tscn" id="5_i7141"]
-[ext_resource type="Texture2D" uid="uid://7ll5deyfl15q" path="res://icon.svg" id="5_qfnet"]
+[ext_resource type="Texture2D" uid="uid://cfwccb861q0cw" path="res://assets/images/buttons/button_end.png" id="5_jhx03"]
 [ext_resource type="Texture2D" uid="uid://ixsc14xb5hwo" path="res://assets/images/other/empty36x36.png" id="6_4mrxx"]
 [ext_resource type="Texture2D" uid="uid://vkofk253ua1s" path="res://animation/hourglass_animation.png" id="6_7r4gi"]
+[ext_resource type="Texture2D" uid="uid://btg0qqpbsi57n" path="res://assets/images/buttons/button_end_press.png" id="6_o8fc1"]
 [ext_resource type="PackedScene" uid="uid://fpjlb2wopxam" path="res://prefabs/chrono_choice.tscn" id="7_i7141"]
+[ext_resource type="Texture2D" uid="uid://bfys1nmutsmkw" path="res://assets/images/buttons/button_end_hover.png" id="7_xo05s"]
 [ext_resource type="Texture2D" uid="uid://dueabum8mjrqb" path="res://assets/images/other/shadow.png" id="10_w7kh3"]
 
 [sub_resource type="GDScript" id="GDScript_4wyf3"]
@@ -19,6 +22,14 @@ func _ready():
 	for i in range(5):
 		Global.spawn_player_card()
 		Global.spawn_enemy_card()
+"
+
+[sub_resource type="GDScript" id="GDScript_e3hyu"]
+script/source = "extends TextureButton
+
+func _on_button_up() -> void:
+	if (z_index == 0):
+		z_index = 116
 "
 
 [sub_resource type="GDScript" id="GDScript_w7kh3"]
@@ -39,6 +50,10 @@ func _on_mouse_exited() -> void:
 func _on_hourglass_animation_looped() -> void:
 	if !hourglass_is_spinning:
 		hourglass.stop()
+
+func _on_button_up() -> void:
+	if (z_index == 0):
+		z_index = 116
 "
 
 [sub_resource type="Animation" id="Animation_w7kh3"]
@@ -79,28 +94,28 @@ _data = {
 &"idle": SubResource("Animation_7r4gi")
 }
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_i7141"]
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_jhx03"]
 lifetime_randomness = 0.15
 particle_flag_disable_z = true
-angle_min = -137.9
-angle_max = 248.3
-inherit_velocity_ratio = 0.758
+angle_min = -180.0
+angle_max = 180.0
 spread = 14.516
 flatness = 0.129
 initial_velocity_max = 10.0
 angular_velocity_min = -1.60933e-05
-angular_velocity_max = -1.60933e-05
+angular_velocity_max = 4.99998
 orbit_velocity_min = 0.1
 orbit_velocity_max = 0.3
 radial_velocity_min = -2.23517e-05
-radial_velocity_max = 66.0
+radial_velocity_max = 50.0
 gravity = Vector3(0, 0, 0)
 linear_accel_min = -2.23517e-06
 linear_accel_max = -2.23517e-06
 radial_accel_min = -2.23517e-06
 radial_accel_max = -2.23517e-06
-tangential_accel_min = -100.0
-tangential_accel_max = -77.74
+tangential_accel_min = -50.0
+tangential_accel_max = -25.0
+damping_max = 15.0
 scale_max = 10.0
 scale_over_velocity_max = 50.0
 color = Color(0.419608, 0.286275, 0.984314, 0.529412)
@@ -110,9 +125,8 @@ anim_speed_max = 1.74
 anim_offset_max = 0.0498
 turbulence_enabled = true
 turbulence_noise_strength = 0.35
-turbulence_noise_scale = 4.865
-turbulence_influence_min = 0.078
-turbulence_influence_max = 0.139
+turbulence_noise_scale = 2.534
+turbulence_influence_max = 0.2
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_w7kh3"]
 atlas = ExtResource("6_7r4gi")
@@ -311,14 +325,53 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_o8fc1"]
+lifetime_randomness = 0.33
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(35, 1, 1)
+angle_min = -137.9
+angle_max = 248.3
+inherit_velocity_ratio = 0.758
+direction = Vector3(0, -60, 0)
+spread = 75.0
+flatness = 0.129
+initial_velocity_max = 75.0
+orbit_velocity_min = 9.49949e-08
+orbit_velocity_max = 0.0500001
+gravity = Vector3(0, 0, 0)
+linear_accel_min = -2.0
+linear_accel_max = 2.0
+tangential_accel_min = -2.23517e-06
+tangential_accel_max = 50.0
+scale_max = 10.0
+scale_over_velocity_max = 50.0
+color = Color(0.419608, 0.286275, 0.984314, 0.529412)
+hue_variation_min = -0.03
+hue_variation_max = 0.03
+anim_speed_max = 1.74
+anim_offset_max = 0.0498
+turbulence_enabled = true
+turbulence_noise_strength = 0.35
+turbulence_noise_scale = 4.865
+turbulence_influence_min = 0.078
+turbulence_influence_max = 0.139
+
 [node name="world" type="Node2D"]
 script = SubResource("GDScript_4wyf3")
 
-[node name="Background" type="Sprite2D" parent="."]
+[node name="BackgroundAermel" type="Sprite2D" parent="."]
 z_index = -1
 position = Vector2(512, 288)
 scale = Vector2(2, 2)
-texture = ExtResource("1_k0juu")
+texture = ExtResource("1_jhx03")
+
+[node name="Background" type="Sprite2D" parent="."]
+visible = false
+z_index = -1
+position = Vector2(512, 288)
+scale = Vector2(2, 2)
+texture = ExtResource("1_jhx03")
 
 [node name="enemy_hand" parent="." instance=ExtResource("4_k0juu")]
 position = Vector2(237, -34)
@@ -335,23 +388,34 @@ position = Vector2(448, 237)
 [node name="drop_spot3" parent="." instance=ExtResource("2_rwgxs")]
 position = Vector2(640, 236)
 
-[node name="button_menu" type="TextureButton" parent="."]
-offset_left = 912.0
-offset_top = -40.0
-offset_right = 1040.0
-offset_bottom = 88.0
-texture_normal = ExtResource("5_qfnet")
-texture_pressed = ExtResource("5_qfnet")
-texture_hover = ExtResource("5_qfnet")
-
 [node name="button_end_round" type="TextureButton" parent="."]
-offset_left = 866.0
-offset_top = 435.0
-offset_right = 994.0
-offset_bottom = 563.0
-texture_normal = ExtResource("5_qfnet")
-texture_pressed = ExtResource("5_qfnet")
-texture_hover = ExtResource("5_qfnet")
+offset_left = 817.0
+offset_top = 490.0
+offset_right = 908.0
+offset_bottom = 517.0
+scale = Vector2(2, 2)
+texture_normal = ExtResource("5_jhx03")
+texture_pressed = ExtResource("6_o8fc1")
+texture_hover = ExtResource("7_xo05s")
+
+[node name="menu" parent="." instance=ExtResource("5_i7141")]
+visible = false
+z_index = 101
+
+[node name="chrono_choice" parent="." instance=ExtResource("7_i7141")]
+visible = false
+z_index = 101
+
+[node name="button_menu" type="TextureButton" parent="."]
+offset_left = 964.0
+offset_top = 4.0
+offset_right = 992.0
+offset_bottom = 32.0
+scale = Vector2(2, 2)
+texture_normal = ExtResource("5_e3hyu")
+texture_pressed = ExtResource("5_e3hyu")
+texture_hover = ExtResource("5_e3hyu")
+script = SubResource("GDScript_e3hyu")
 
 [node name="shadow_hourglass" type="Sprite2D" parent="."]
 position = Vector2(864, 262)
@@ -381,7 +445,7 @@ position = Vector2(36, 36)
 scale = Vector2(2, 2)
 amount = 50
 lifetime = 1.2
-process_material = SubResource("ParticleProcessMaterial_i7141")
+process_material = SubResource("ParticleProcessMaterial_jhx03")
 
 [node name="animation_hourglass" type="AnimatedSprite2D" parent="button_chrono"]
 position = Vector2(36, 36)
@@ -389,16 +453,18 @@ scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_817gm")
 frame_progress = 0.546459
 
-[node name="menu" parent="." instance=ExtResource("5_i7141")]
-visible = false
-z_index = 101
+[node name="particles_aermel" type="GPUParticles2D" parent="."]
+position = Vector2(87, 579)
+scale = Vector2(2, 2)
+amount = 40
+lifetime = 2.5
+process_material = SubResource("ParticleProcessMaterial_o8fc1")
 
-[node name="chrono_choice" parent="." instance=ExtResource("7_i7141")]
-visible = false
-z_index = 101
-
+[connection signal="button_up" from="button_end_round" to="hand" method="_on_button_end_round_button_up"]
 [connection signal="button_up" from="button_menu" to="menu" method="_on_button_menu_pressed"]
+[connection signal="button_up" from="button_menu" to="button_menu" method="_on_button_up"]
 [connection signal="button_up" from="button_chrono" to="chrono_choice" method="_on_button_chrono_pressed"]
+[connection signal="button_up" from="button_chrono" to="button_chrono" method="_on_button_up"]
 [connection signal="mouse_entered" from="button_chrono" to="button_chrono" method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="button_chrono" to="button_chrono" method="_on_mouse_exited"]
 [connection signal="animation_looped" from="button_chrono/animation_hourglass" to="button_chrono" method="_on_hourglass_animation_looped"]

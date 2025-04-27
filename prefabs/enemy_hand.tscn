@@ -1,4 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://dh0jkpep4cp4u"]
+[gd_scene load_steps=4 format=3 uid="uid://dh0jkpep4cp4u"]
+
+[ext_resource type="FontFile" uid="uid://c8w8hvebyg5yk" path="res://assets/PublicPixel.ttf" id="1_uwl37"]
 
 [sub_resource type="GDScript" id="GDScript_uu4a1"]
 resource_name = "hand"
@@ -6,11 +8,13 @@ script/source = "extends Area2D
 
 var snap_velocity = 15.0
 
+var health = 20
 var cards = []
 var card_positions = []
 
 func _ready() -> void:
 	Global.enemy_hand = self
+	$healthDisplay.text = str(health)
 
 func remove_card(card) -> void:
 	cards.erase(card)
@@ -56,6 +60,13 @@ func choose_move(spots: Array, player_cards: Array) -> Array:
 			if ((Global.is_card_num(card) and spot.enemy_is_empty()) or !Global.is_card_num(card)) and !spot.enemy_is_full():
 				return [card, spot]
 	return [cards[0], spots[0]]
+	
+func damage_enemy(amount: int) -> void:
+	if ((health - amount) >= 0):
+		health -= amount
+	else: 
+		health = 0
+	$healthDisplay.text = str(health)
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uu4a1"]
@@ -68,3 +79,13 @@ script = SubResource("GDScript_uu4a1")
 position = Vector2(275, 49)
 shape = SubResource("RectangleShape2D_uu4a1")
 disabled = true
+
+[node name="healthDisplay" type="Label" parent="."]
+offset_left = -65.0
+offset_top = 73.0
+offset_right = -5.0
+offset_bottom = 118.0
+theme_override_fonts/font = ExtResource("1_uwl37")
+theme_override_font_sizes/font_size = 24
+text = "0"
+horizontal_alignment = 2

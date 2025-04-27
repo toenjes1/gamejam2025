@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://cdcpxpfojuaeq"]
+[gd_scene load_steps=6 format=3 uid="uid://cdcpxpfojuaeq"]
 
 [ext_resource type="Texture2D" uid="uid://31opkp4ms3cq" path="res://assets/images/backdrop_elements/border.png" id="1_mwg88"]
 [ext_resource type="Texture2D" uid="uid://dkw1k3h357qhx" path="res://assets/images/backdrop_elements/border_hover.png" id="2_lx47d"]
+[ext_resource type="FontFile" uid="uid://c8w8hvebyg5yk" path="res://assets/PublicPixel.ttf" id="3_hk8yy"]
 
 [sub_resource type="GDScript" id="GDScript_5g2wd"]
 resource_name = "drop_spot"
@@ -192,12 +193,14 @@ offset_left = 119.0
 offset_top = 111.0
 offset_right = 159.0
 offset_bottom = 134.0
+theme_override_fonts/font = ExtResource("3_hk8yy")
 
 [node name="sum" type="Label" parent="."]
 offset_left = 115.0
 offset_top = 18.0
 offset_right = 155.0
 offset_bottom = 41.0
+theme_override_fonts/font = ExtResource("3_hk8yy")
 text = "0"
 
 [node name="enemy_sum" type="Label" parent="."]
@@ -205,6 +208,7 @@ offset_left = 115.0
 offset_top = -39.0
 offset_right = 155.0
 offset_bottom = -16.0
+theme_override_fonts/font = ExtResource("3_hk8yy")
 text = "0"
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
