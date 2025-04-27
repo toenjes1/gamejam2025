@@ -143,6 +143,7 @@ func enemy_play(card, idx) -> Node:
 
 func card_played(player_card) -> void:
 	var enemy_card_play = enemy_hand.choose_card()
+	enemy_card_play.is_drop_spotted = true
 	var drop_spot = enemy_play(enemy_card_play, 0)
 	await get_tree().create_timer(1).timeout
 	player_card.turn_to_front()

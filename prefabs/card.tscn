@@ -68,7 +68,7 @@ func set_sprite_z_index(z):
 
 func drag_logic(delta: float) -> void:
 	$Sprite2D/shadow.position = Vector2(-12, 12).rotated($Sprite2D.rotation)
-	if is_drop_spotted or not is_player_card:
+	if is_drop_spotted:
 		$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)
 		if mouse_in:
 			_change_scale(card_scale * 1.1)
@@ -79,8 +79,8 @@ func drag_logic(delta: float) -> void:
 		if $Sprite2D.rotation_degrees != 0.0:
 			$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)
 		return
-		
-		
+	
+	
 	if ((mouse_in or is_dragging)
 		and (Global.node_being_dragged == null or Global.node_being_dragged == self)):
 		
