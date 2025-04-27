@@ -19,8 +19,8 @@ var cards = []
 var enemy_cards = []
 var player_cards_sum = 0
 var enemy_cards_sum = 0
-var base_value
-var base_value_enemy
+var base_value = null
+var base_value_enemy = null
 var is_reversed = false
 
 func _ready() -> void:
