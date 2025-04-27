@@ -37,12 +37,11 @@ func _physics_process(delta: float) -> void:
 
 func set_card_id(new_card_id):
 	card_id = new_card_id
-	$RichTextLabel.text = (\"[color=#3e4989]\" + Global.card_props[new_card_id].name + \"[/color]\\n\"
+	$RichTextLabel.set_text(\"[color=#3cc0c0]\" + Global.card_props[new_card_id].name + \"[/color]\\n\"
 		+ Global.card_props[new_card_id].description)
 	var new_sb = StyleBoxFlat.new()
 	new_sb.bg_color = Color.from_rgba8(0, 0, 0, 127)
 	$RichTextLabel.add_theme_stylebox_override(\"normal\", new_sb)
-	$RichTextLabel.position = Vector2($RichTextLabel.position.x, $RichTextLabel.size.y)
 
 func set_sprite_texture(new_texture):
 	front_texture = new_texture
@@ -131,7 +130,9 @@ func drop_spotted() -> void:
 	
 
 func _on_mouse_entered() -> void:
+	$RichTextLabel.position = Vector2($Sprite2D.position.x - 50, $Sprite2D.position.y - 58 - $RichTextLabel.get_content_height())
 	mouse_in = true
+	
 func _on_mouse_exited() -> void:
 	mouse_in = false
 
@@ -268,7 +269,7 @@ offset_bottom = -6.0
 theme_override_fonts/normal_font = ExtResource("2_5tooj")
 theme_override_font_sizes/normal_font_size = 8
 bbcode_enabled = true
-text = "[color=#3e4989]ABA[/color]
+text = "[color=#3cc0c0]ABA[/color]
 ab"
 fit_content = true
 scroll_active = false
