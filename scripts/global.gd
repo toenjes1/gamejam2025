@@ -187,3 +187,13 @@ func cycle_phase(caller) -> void:
 			enemy_play[0].is_drop_spotted = true
 		cycle_phase('enemy')
 	
+func accumulate_damages() -> void:
+	var dmgPlayer = 0
+	var dmgEnemy = 0
+	for drop_spot in drop_spots:
+		if drop_spot.player_cards_sum > drop_spot.enemy_cards_sum:
+			dmgEnemy += (drop_spot.player_cards_sum - drop_spot.enemy_cards_sum)
+		else:
+			dmgPlayer += (drop_spot.enemy_cards_sum - drop_spot.player_cards_sum)
+	hand.damage_player(dmgPlayer)
+	enemy_hand.damage_enemy(dmgEnemy)
