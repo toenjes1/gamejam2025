@@ -104,7 +104,7 @@ func spawn_card(card_id: String, show_front: bool = false) -> Node:
 	else:
 		new_card.set_sprite_texture(no_card_texture)
 	get_tree().get_root().get_child(0).add_child(new_card)
-	new_card.global_position = Vector2(0,0)
+	new_card.global_position = Vector2(152,248)
 	return new_card
 
 func spawn_cards() -> void:

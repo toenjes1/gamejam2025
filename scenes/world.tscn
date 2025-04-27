@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3 uid="uid://brdcotededjl4"]
+[gd_scene load_steps=51 format=3 uid="uid://brdcotededjl4"]
 
 [ext_resource type="Texture2D" uid="uid://cyje0wsg1ufd3" path="res://assets/images/backdrop_elements/background_aermel.png" id="1_jhx03"]
 [ext_resource type="PackedScene" uid="uid://21g32hmxh8h5" path="res://prefabs/hand.tscn" id="1_nnsk1"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://fpjlb2wopxam" path="res://prefabs/chrono_choice.tscn" id="7_i7141"]
 [ext_resource type="Texture2D" uid="uid://bfys1nmutsmkw" path="res://assets/images/buttons/button_end_hover.png" id="7_xo05s"]
 [ext_resource type="Texture2D" uid="uid://dueabum8mjrqb" path="res://assets/images/other/shadow.png" id="10_w7kh3"]
+[ext_resource type="Texture2D" uid="uid://cuj6xu3iee4vw" path="res://assets/images/backdrop_elements/deck.png" id="11_o8fc1"]
 
 [sub_resource type="GDScript" id="GDScript_4wyf3"]
 resource_name = "puppetmaster"
@@ -420,6 +421,11 @@ texture_normal = ExtResource("5_e3hyu")
 texture_pressed = ExtResource("5_e3hyu")
 texture_hover = ExtResource("5_e3hyu")
 script = SubResource("GDScript_e3hyu")
+
+[node name="Deck" type="Sprite2D" parent="."]
+position = Vector2(152, 248)
+scale = Vector2(2, 2)
+texture = ExtResource("11_o8fc1")
 
 [node name="shadow_hourglass" type="Sprite2D" parent="."]
 position = Vector2(864, 262)

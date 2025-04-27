@@ -96,10 +96,10 @@ shape = SubResource("RectangleShape2D_a6gvt")
 disabled = true
 
 [node name="healthDisplay" type="Label" parent="."]
-offset_left = -119.0
-offset_top = -19.0
-offset_right = 1.0
-offset_bottom = 26.0
+offset_left = -163.0
+offset_top = -123.0
+offset_right = -43.0
+offset_bottom = -78.0
 theme_override_fonts/font = ExtResource("1_a6gvt")
 theme_override_font_sizes/font_size = 16
 text = "HP: 0"
