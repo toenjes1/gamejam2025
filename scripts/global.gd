@@ -1,7 +1,9 @@
 extends Node
 
-var player_seed = 69
+var player_seed = randi()
 var enemy_seed = 457
+
+var drop_dict: Dictionary
 
 const card_base_path = 'res://assets/images/cards/'
 
@@ -28,6 +30,7 @@ var card_props = {
 }
 
 const no_card_texture = preload(card_base_path + "no_card.png")
+const drop_point_prefab = preload("res://prefabs/drop_spot.tscn")
 
 var numb_card_ids = []
 var spec_card_ids = []
@@ -42,8 +45,8 @@ var drop_spots = []
 var enemy_played_cards = []
 var menu = null
 
-var chrono_point_max = 3
-var chrono_point_current = 2
+var chrono_point_max = 12
+var chrono_point_current = 12
 
 var game_phase = 0
 # 0 := normales Kartenlegen beidseitig
@@ -59,6 +62,14 @@ var node_being_dragged_is_player: int = -1
 # 0 := enemy card being dragged
 # 1 := player card being dragged
 
+var global_count = 0
+# for random stuff
+
+# time stuff
+var deck_previewed = []
+var moves_previewed = []
+var past_states = []
+
 func _ready() -> void:
 	for card_id in card_props:
 		if card_props[card_id].is_number:
@@ -68,6 +79,101 @@ func _ready() -> void:
 			spec_card_ids.append(card_id)
 		if card_props[card_id].has('texture'):
 			card_props[card_id].texture = load(card_base_path + card_props[card_id].texture)
+
+func save_state() -> void:
+	var spot_contents = []
+	for i in range(drop_spots.size()):
+		var spot = drop_dict[i]
+		var player_cards = []
+		var enemy_cards = []
+		for card in spot.cards:
+			player_cards.append(card.card_id)
+		for card in spot.enemy_cards:
+			enemy_cards.append(card.card_id)
+		spot_contents.append([player_cards, enemy_cards, spot.base_value, spot.is_reversed, spot.global_position])
+	var hand_cards = []
+	for card in hand.cards:
+		hand_cards.append(card.card_id)
+	var player_hand = [hand_cards, hand.health]
+	var enemy_hand_cards = []
+	for card in enemy_hand.cards:
+		enemy_hand_cards.append(card.card_id)
+	var enemy_hand = [enemy_hand_cards, enemy_hand.health]
+	
+	past_states.append([spot_contents, player_hand, enemy_hand, game_phase, phase_one_player])
+	if past_states.size() > 5:
+		past_states.remove_at(0)
+
+func reset_to_state():
+	if past_states.is_empty():
+		return
+	
+	clear_slots()
+	
+	for card in hand.cards:
+		hand.cards.erase(card)
+		card.queue_free()
+	if not hand.cards.is_empty():
+		var last_card = hand.cards[0]
+		hand.cards.erase(last_card)
+		last_card.queue_free()
+	for card in enemy_hand.cards:
+		enemy_hand.cards.erase(card)
+		card.queue_free()
+	if not enemy_hand.cards.is_empty():
+		var last_card = enemy_hand.cards[0]
+		enemy_hand.cards.erase(last_card)
+		last_card.queue_free()
+	### clearing done hopefully :c
+	
+	var last_state
+	if past_states.size() < 2:
+		last_state = past_states[0]
+	last_state = past_states[past_states.size() - 2]
+	
+	for i in range(last_state[0].size()):
+		var spot_data = last_state[0][i]
+		var target_spot = Global.drop_spots[i]
+		for player_card in spot_data[0]:
+			var added_card = spawn_card(player_card, true)
+			target_spot.cards.append(added_card)
+		for enemy_card in spot_data[1]:
+			var added_card = spawn_card(enemy_card, true)
+			target_spot.enemy_cards.append(added_card)
+		target_spot.base_value = spot_data[2]
+		target_spot.set_type_display()
+		target_spot.recalc_player_sum()
+		target_spot.recalc_enemy_sum()
+		target_spot.is_reversed = spot_data[3]
+	### drop spots resest
+	
+	while not hand.cards.is_empty():
+		hand.cards[hand.cards.size() - 1].queue_free()
+		hand.cards.remove_at(hand.cards.size() - 1)
+		
+	for id in last_state[1][0]:
+		print(id)
+		var added_card = spawn_player_card_from_id(id)
+	hand.update_card_z_values()
+	hand.set_health(last_state[1][1])
+	### player hand done
+	
+	while not enemy_hand.cards.is_empty():
+		enemy_hand.cards[enemy_hand.cards.size() - 1].queue_free()
+		enemy_hand.cards.remove_at(enemy_hand.cards.size() - 1)
+	
+	for id in last_state[2][0]:
+		var added_card = spawn_enemy_card_from_id(id)
+	enemy_hand.update_card_z_values()
+	enemy_hand.set_health(last_state[2][1])
+	### enemy hand resetted
+	
+	game_phase = last_state[3]
+	phase_one_player = last_state[4]
+	### maybe done resetting?
+	
+	past_states.remove_at(past_states.size() - 1)
+	
 
 func switch_to_scene(scene_name: String) -> void:
 	if scene_name != "world":
@@ -117,7 +223,8 @@ func spawn_cards() -> void:
 func create_bag(seed: int) -> Array:
 	var bag = []
 	var rng = RandomNumberGenerator.new()
-	rng.set_seed(seed)
+	rng.set_seed(seed+global_count*9)
+	global_count += 8
 	for i in range(2):
 		bag.append(random_spec_card_id(rng))
 	for i in range(5):
@@ -127,10 +234,24 @@ func create_bag(seed: int) -> Array:
 	return bag
 
 func spawn_player_card() -> Node:
+	if not deck_previewed.is_empty():
+		spawn_player_card_from_id(deck_previewed[0])
+		deck_previewed.remove_at(0)
+	
 	if player_bag.is_empty():
 		player_bag = create_bag(player_seed)
 	var new_card = spawn_card(player_bag[0], true)
 	player_bag.remove_at(0)
+	new_card.is_player_card = true
+	new_card.got_dropped.connect(hand.card_got_dropped)
+	new_card.got_drop_spotted.connect(hand.remove_card)
+	for drop_spot in drop_spots:
+		new_card.got_dropped.connect(drop_spot.card_got_dropped)
+	hand.add_card(new_card)
+	return new_card
+
+func spawn_player_card_from_id(id) -> Node:
+	var new_card = spawn_card(id, true)
 	new_card.is_player_card = true
 	new_card.got_dropped.connect(hand.card_got_dropped)
 	new_card.got_drop_spotted.connect(hand.remove_card)
@@ -148,10 +269,17 @@ func spawn_enemy_card() -> Node:
 	enemy_hand.add_card(new_card)
 	return new_card
 
+func spawn_enemy_card_from_id(id) -> Node:
+	var new_card = spawn_card(id, false)
+	new_card.is_player_card = false
+	enemy_hand.add_card(new_card)
+	return new_card
+
 func enemy_play(card, spot) -> Node:
 	spot.add_enemy_card(card)
 	spot.enemy_stack_z_index_update()
 	enemy_hand.cards.erase(card)
+	print(enemy_hand.cards.size())
 	enemy_played_cards.append(card)
 	return spot
 
@@ -181,6 +309,8 @@ func card_played(player_card, card_drop) -> void:
 	
 	if game_phase == 1:
 		cycle_phase('player')
+	
+	save_state()
 
 func menu_open(text):
 	menu.set_text(text)
@@ -223,30 +353,7 @@ func cycle_phase(caller) -> void:
 			menu_open("You win")
 			return
 		await get_tree().create_timer(0.5).timeout
-		for spot in drop_spots:
-			for card in spot.cards:
-				spot.cards.erase(card)
-				card.queue_free()
-			if not spot.cards.is_empty():
-				var last_card = spot.cards[0]
-				spot.cards.erase(last_card)
-				last_card.queue_free()
-			
-			for card in spot.enemy_cards:
-				spot.enemy_cards.erase(card)
-				card.queue_free()
-			if not spot.enemy_cards.is_empty():
-				var last_card = spot.enemy_cards[0]
-				spot.enemy_cards.erase(last_card)
-				last_card.queue_free()
-			
-			spot.player_cards_sum = 0
-			spot.set_sum_display('0')
-			spot.enemy_cards_sum = 0
-			spot.set_enemy_sum_display('0')
-			spot.base_value = 0
-			spot.set_type_display()
-			spot.is_reversed = false
+		clear_slots()
 		
 		for i in range(5):
 			Global.spawn_player_card()
@@ -255,6 +362,32 @@ func cycle_phase(caller) -> void:
 		enemy_hand.update_card_z_values()
 		
 		cycle_phase('game')
+
+func clear_slots():
+	for spot in drop_spots:
+		for card in spot.cards:
+			spot.cards.erase(card)
+			card.queue_free()
+		if not spot.cards.is_empty():
+			var last_card = spot.cards[0]
+			spot.cards.erase(last_card)
+			last_card.queue_free()
+		
+		for card in spot.enemy_cards:
+			spot.enemy_cards.erase(card)
+			card.queue_free()
+		if not spot.enemy_cards.is_empty():
+			var last_card = spot.enemy_cards[0]
+			spot.enemy_cards.erase(last_card)
+			last_card.queue_free()
+		
+		spot.player_cards_sum = 0
+		spot.set_sum_display('0')
+		spot.enemy_cards_sum = 0
+		spot.set_enemy_sum_display('0')
+		spot.base_value = 0
+		spot.set_type_display()
+		spot.is_reversed = false
 
 func accumulate_damages():
 	var dmgPlayer = 0

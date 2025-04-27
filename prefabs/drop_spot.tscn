@@ -22,6 +22,7 @@ var enemy_cards_sum = 0
 var base_value
 var base_value_enemy
 var is_reversed = false
+var global_index
 
 func _ready() -> void:
 	Global.drop_spots.append(self)
@@ -257,6 +258,9 @@ func _physics_process(delta: float) -> void:
 func card_got_dropped(card) -> void:
 	if can_place(card.card_id, cards, enemy_cards, base_value, false):
 		cards.append(card)
+		if cards.size() > 1:
+			print(cards[0])
+			print(cards[1])
 		card.drop_spotted()
 		Global.card_played(card, self)
 		card.set_sprite_z_index(cards.size() - 1)
@@ -310,6 +314,14 @@ func recalc_player_sum():
 			new_sum += Global.card_props[card.card_id]['value']
 	player_cards_sum = new_sum
 	set_sum_display(new_sum)
+
+func recalc_enemy_sum():
+	var new_sum = 0
+	for card in enemy_cards:
+		if Global.card_props[card.card_id]['is_number']:
+			new_sum += Global.card_props[card.card_id]['value']
+	enemy_cards_sum = new_sum
+	set_enemy_sum_display(new_sum)
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5g2wd"]

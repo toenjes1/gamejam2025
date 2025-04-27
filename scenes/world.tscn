@@ -18,14 +18,18 @@
 resource_name = "puppetmaster"
 script/source = "extends Node2D
 
-var drop_spot_order: Dictionary
-
 func _ready():
+	var c = 0
+	for spot in Global.drop_spots:
+		spot.global_index = c
+		Global.drop_dict[c] = spot
+		c += 1
 	Global.game_phase = 0
 	for i in range(5):
 		Global.spawn_player_card()
 	for i in range(5):
 		Global.spawn_enemy_card()
+	Global.save_state()
 "
 
 [sub_resource type="GDScript" id="GDScript_e3hyu"]

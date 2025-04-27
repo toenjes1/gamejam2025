@@ -14,9 +14,9 @@ script/source = "extends Control
 @onready var anim_player = $AnimationPlayer
 
 var is_open: bool = false
-var cost_rewind = 0
-var cost_view = 0
-var cost_predict = 0
+var cost_rewind = 3
+var cost_view = 2
+var cost_predict = 2
 
 func close() -> void:
 	is_open = false
@@ -26,7 +26,8 @@ func _on_button_chrono_pressed() -> void:
 	if (is_open):
 		close()
 	else:
-		$label_chrono_points.text = \"CP:\\n\" + str(Global.chrono_point_current) + \"/\" + str(Global.chrono_point_max)
+		$label_chrono_points.text = \"Chrono:\\n\" + str(Global.chrono_point_current) + \"/\" + str(Global.chrono_point_max)
+		$output.text = \"\"
 		is_open = true
 		anim_player.play(\"fade_in\")
 		visible = true
@@ -39,19 +40,40 @@ func _on_animation_finished(anim_name: StringName) -> void:
 func _on_button_rewind_pressed() -> void:
 	if Global.chrono_point_current >= cost_rewind:
 		Global.chrono_point_current -= cost_rewind
-		print(\"chose REWIND\\n\")
+		Global.reset_to_state()
 		close()
 
 func _on_button_view_pressed() -> void:
 	if Global.chrono_point_current >= cost_view:
 		Global.chrono_point_current -= cost_view
-		print(\"chose VIEW\\n\")
+		var viewed_card
+		if Global.player_bag.is_empty():
+			Global.player_bag = Global.create_bag(Global.player_seed)
+		
+		viewed_card = Global.player_bag[0]
+		Global.player_bag.remove_at(0)
+		
+		$output.text = \"I will draw a \" + viewed_card + \" card next\"
+		
+		Global.deck_previewed.append(viewed_card)
+		$label_chrono_points.text = \"Chrono:\\n\" + str(Global.chrono_point_current) + \"/\" + str(Global.chrono_point_max)
+		await get_tree().create_timer(3).timeout
+		
 		close()
 
 func _on_button_predict_pressed() -> void:
 	if Global.chrono_point_current >= cost_predict:
 		Global.chrono_point_current -= cost_predict
-		print(\"chose PREDICT\\n\")
+		var viewed_move = Global.enemy_hand.choose_move(Global.drop_spots, Global.hand.cards)
+		viewed_move[0] = viewed_move[0].card_id
+		viewed_move[1] = Global.drop_spots.find(viewed_move[1])
+		
+		$output.text = \"They'll place a \"+viewed_move[0]+\" card on field \" + str(viewed_move[1]+1)
+		
+		Global.moves_previewed.append(viewed_move)
+		$label_chrono_points.text = \"Chrono:\\n\" + str(Global.chrono_point_current) + \"/\" + str(Global.chrono_point_max)
+		await get_tree().create_timer(3).timeout
+		
 		close()
 "
 
@@ -105,7 +127,7 @@ offset_right = 1074.0
 offset_bottom = 576.0
 color = Color(0.219608, 0, 0.188235, 0.498039)
 
-[node name="button_rewind" type="TextureButton" parent="."]
+[node name="button_view" type="TextureButton" parent="."]
 layout_mode = 0
 offset_left = 100.0
 offset_top = 116.0
@@ -117,27 +139,32 @@ texture_pressed = ExtResource("2_c2de1")
 texture_hover = ExtResource("1_qencu")
 
 [node name="label_rewind" type="Label" parent="."]
-offset_left = 57.0
-offset_top = 265.0
-offset_right = 277.0
-offset_bottom = 306.0
+layout_mode = 0
+offset_left = 303.0
+offset_top = 264.0
+offset_right = 523.0
+offset_bottom = 305.0
 theme_override_fonts/font = ExtResource("7_m06ti")
 theme_override_font_sizes/font_size = 24
 text = "Rewind"
 horizontal_alignment = 1
 
 [node name="label_rewind_text" type="Label" parent="label_rewind"]
-offset_left = -9.0
-offset_top = 42.0
-offset_right = 246.0
-offset_bottom = 217.0
+layout_mode = 0
+offset_left = -8.0
+offset_top = 41.0
+offset_right = 247.0
+offset_bottom = 216.0
 theme_override_fonts/font = ExtResource("7_m06ti")
 theme_override_font_sizes/font_size = 16
-text = "a text, which describes the abhorrently complex rewind function"
+text = "rewind the match's progression by one turn
+
+
+cost: 3"
 autowrap_mode = 2
 clip_text = true
 
-[node name="button_view" type="TextureButton" parent="."]
+[node name="button_rewind" type="TextureButton" parent="."]
 layout_mode = 0
 offset_left = 350.0
 offset_top = 116.0
@@ -149,23 +176,27 @@ texture_pressed = ExtResource("4_as6rh")
 texture_hover = ExtResource("3_c2de1")
 
 [node name="label_view" type="Label" parent="."]
-offset_left = 310.0
-offset_top = 265.0
-offset_right = 530.0
-offset_bottom = 306.0
+layout_mode = 0
+offset_left = 58.0
+offset_top = 264.0
+offset_right = 278.0
+offset_bottom = 305.0
 theme_override_fonts/font = ExtResource("7_m06ti")
 theme_override_font_sizes/font_size = 24
 text = "View"
 horizontal_alignment = 1
 
 [node name="label_view_text" type="Label" parent="label_view"]
+layout_mode = 0
 offset_left = -9.0
 offset_top = 42.0
 offset_right = 246.0
 offset_bottom = 217.0
 theme_override_fonts/font = ExtResource("7_m06ti")
 theme_override_font_sizes/font_size = 16
-text = "a text, which describes the abhorrently complex view function"
+text = "view the top card of the deck that you will be drawing next
+
+cost: 2"
 autowrap_mode = 2
 clip_text = true
 
@@ -181,6 +212,7 @@ texture_pressed = ExtResource("5_as6rh")
 texture_hover = ExtResource("4_m06ti")
 
 [node name="label_predict" type="Label" parent="."]
+layout_mode = 0
 offset_left = 565.0
 offset_top = 265.0
 offset_right = 785.0
@@ -191,23 +223,30 @@ text = "Predict"
 horizontal_alignment = 1
 
 [node name="label_view_text" type="Label" parent="label_predict"]
-offset_left = -9.0
+layout_mode = 0
+offset_left = -8.0
 offset_top = 42.0
-offset_right = 246.0
-offset_bottom = 217.0
+offset_right = 247.0
+offset_bottom = 202.0
 theme_override_fonts/font = ExtResource("7_m06ti")
 theme_override_font_sizes/font_size = 16
-text = "a text, which describes the abhorrently complex predict function"
+text = "predict the next enemy move
+
+
+
+
+cost: 2"
 autowrap_mode = 2
 clip_text = true
 
 [node name="label_chrono_points" type="Label" parent="."]
+layout_mode = 0
 offset_left = 824.0
 offset_top = 346.0
 offset_right = 985.0
 offset_bottom = 413.0
 theme_override_fonts/font = ExtResource("7_m06ti")
-theme_override_font_sizes/font_size = 32
+theme_override_font_sizes/font_size = 24
 text = "CP:
 0/0"
 horizontal_alignment = 2
@@ -218,7 +257,16 @@ libraries = {
 &"": SubResource("AnimationLibrary_f06o2")
 }
 
-[connection signal="button_up" from="button_rewind" to="." method="_on_button_rewind_pressed"]
+[node name="output" type="Label" parent="."]
+layout_mode = 0
+offset_left = 163.0
+offset_top = 44.0
+offset_right = 203.0
+offset_bottom = 68.0
+theme_override_fonts/font = ExtResource("7_m06ti")
+theme_override_font_sizes/font_size = 24
+
 [connection signal="button_up" from="button_view" to="." method="_on_button_view_pressed"]
+[connection signal="button_up" from="button_rewind" to="." method="_on_button_rewind_pressed"]
 [connection signal="button_up" from="button_predict" to="." method="_on_button_predict_pressed"]
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_finished"]
