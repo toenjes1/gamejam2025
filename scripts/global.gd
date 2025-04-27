@@ -1,7 +1,7 @@
 extends Node
 
-var player_seed = 69
-var enemy_seed = 457
+var player_seed = 70
+var enemy_seed = 45
 
 const card_base_path = 'res://assets/images/cards/'
 
@@ -32,8 +32,8 @@ const no_card_texture = preload(card_base_path + "no_card.png")
 var numb_card_ids = []
 var spec_card_ids = []
 
-var player_bag = ['swa']
-var enemy_bag = ['1','1','1','1','1']
+var player_bag = []
+var enemy_bag = []
 
 const card_prefab = preload("res://prefabs/card.tscn")
 var hand = null
@@ -41,6 +41,9 @@ var enemy_hand = null
 var drop_spots = []
 var enemy_played_cards = []
 var menu = null
+
+var chrono_point_max = 3
+var chrono_point_current = 2
 
 var game_phase = 0
 # 0 := normales Kartenlegen beidseitig
@@ -139,7 +142,7 @@ func spawn_player_card() -> Node:
 func spawn_enemy_card() -> Node:
 	if enemy_bag.is_empty():
 		enemy_bag = create_bag(enemy_seed)
-	var new_card = spawn_card(enemy_bag[0], false)
+	var new_card = spawn_card(enemy_bag[0], true)
 	enemy_bag.remove_at(0)
 	new_card.is_player_card = false
 	enemy_hand.add_card(new_card)

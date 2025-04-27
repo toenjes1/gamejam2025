@@ -46,23 +46,190 @@ func calculate_position(idx: float) -> Vector2:
 func add_card(new_card) -> void:
 	cards.append(new_card)
 
-func choose_move(spots: Array, player_cards: Array) -> Array:
+func choose_move(spots: Array, p_cards: Array) -> Array:
+	const target_depth = 2
+	
 	if cards.is_empty():
 		return [null, null]
-	var chosen_spot = spots[0]
-	var chosen_card = cards[0]
-	spots.shuffle()
-	for spot in spots:
-		for card in cards:
-			print(spot.base_value_enemy, Global.get_card_val(card))
-			if Global.get_card_val(card) == spot.base_value_enemy:
-				return [card, spot]
-	for spot in spots:
-		for card in cards:
-			if ((Global.is_card_num(card) and spot.enemy_is_empty()) or !Global.is_card_num(card)) and !spot.enemy_is_full():
-				return [card, spot]
-	return [cards[0], spots[0]]
 	
+	var spot_card_ids = [[], []]
+	var base_values = [[], []]
+	for spot in spots:
+		base_values[0].append(spot.base_value_enemy)
+		spot_card_ids[0].append([])
+		for card in spot.enemy_cards:
+			spot_card_ids[0][spot_card_ids[0].size() - 1].append(card.card_id)
+		base_values[1].append(spot.base_value)
+		spot_card_ids[1].append([])
+		for card in spot.cards:
+			spot_card_ids[1][spot_card_ids[1].size() - 1].append(card.card_id)
+	var player_card_ids = []
+	var enemy_card_ids = []
+	for card in p_cards:
+		player_card_ids.append(card.card_id)
+	for card in cards:
+		enemy_card_ids.append(card.card_id)
+	
+	var res = minimax(0, target_depth, true, spots, base_values[0], base_values[1], spot_card_ids[0], spot_card_ids[1], enemy_card_ids, player_card_ids, health, Global.hand.health, false)
+	var moved_card_id = res[1][0]
+	var moved_spot_idx = res[1][1]
+	print(\"utility \" + str(res[0]))
+	print(res)
+	
+	#return [cards[0], spots[0]]
+	
+	var chosen_card = null
+	var chosen_spot = null if moved_spot_idx == null else spots[moved_spot_idx]
+	
+	if moved_card_id != null:
+		for idx in range(cards.size()):
+			if cards[idx].card_id == moved_card_id:
+				chosen_card = cards[idx]
+				break
+	
+	return [chosen_card, chosen_spot]
+
+func minimax(cur_depth: int, target_depth: int, is_maximizing: bool, spots: Array, own_base_values: Array, other_base_values: Array, own_spots_card_ids: Array, other_spots_card_ids: Array, own_hand_card_ids: Array, other_hand_card_ids: Array, own_health: int, other_health: int, has_passed: bool) -> Array:
+	#print(cur_depth)
+	var possible_moves = []
+	for spot_idx in range(own_spots_card_ids.size()):
+		for card_id in own_hand_card_ids:
+			if own_spots_card_ids[spot_idx].size() < spots[spot_idx].max_stack_size and can_place(card_id, own_spots_card_ids[spot_idx], other_spots_card_ids[spot_idx], own_base_values[spot_idx]):
+				possible_moves.append([card_id, spot_idx])
+	#possible_moves.append([null, null])
+	
+	if cur_depth <= 1: print(possible_moves)
+	var extremal_utility = -1000 if is_maximizing else 1000
+	var extremal_move = [null, null]
+	
+	for move in possible_moves:
+		var card_id = move[0]
+		var spot_idx = move[1]
+		var new_res
+		if card_id != null:
+			var new_own_spots = own_spots_card_ids.duplicate(true)
+			var new_own_base_vals = own_base_values.duplicate()
+			var new_own_hand_cards = own_hand_card_ids.duplicate()
+			var new_other_spots = other_spots_card_ids.duplicate(true)
+			if card_id == 'jok':
+				if own_base_values[spot_idx] != null:
+					card_id = str(own_base_values[spot_idx])
+				else:
+					card_id = '0'
+			elif card_id == 'hal':
+				for idx in range(new_own_spots[spot_idx].size()):
+					if Global.card_props[new_own_spots[spot_idx][idx]].is_numbder:
+						new_own_spots[spot_idx][idx] = str(int(ceilf(float(new_own_spots[spot_idx][idx]) / 2.0)))
+				for idx in range(new_other_spots[spot_idx].size()):
+					if Global.card_props[new_other_spots[spot_idx][idx]].is_numbder:
+						new_other_spots[spot_idx][idx] = str(int(ceilf(float(new_other_spots[spot_idx][idx]) / 2.0)))
+			elif card_id == 'gen':
+				new_own_spots[spot_idx] = []
+				new_other_spots[spot_idx] = []
+			elif card_id == 'nul':
+				for idx in range(new_own_spots[spot_idx].size()):
+					if Global.card_props[new_own_spots[spot_idx][idx]].is_number:
+						new_own_spots[spot_idx][idx] = '0'
+				for idx in range(new_other_spots[spot_idx].size()):
+					if Global.card_props[new_other_spots[spot_idx][idx]].is_number:
+						new_other_spots[spot_idx][idx] = '0'
+			elif card_id == 'rig':
+				new_other_spots[(spot_idx + 1) % 3] += new_other_spots[spot_idx]
+				new_other_spots[spot_idx] = []
+			elif card_id == 'lef':
+				new_other_spots[spot_idx - 1 if spot_idx != 0 else new_other_spots.size() - 1] += new_other_spots[spot_idx]
+				new_other_spots[spot_idx] = []
+			elif card_id == 'swa':
+				var min_spot_idx = 0
+				var min_spot_sum = 1000
+				for idx in range(new_own_spots.size()):
+					if idx != spot_idx:
+						var cur_sum = 0
+						for id in new_own_spots[idx]:
+							if Global.card_props[id].is_number:
+								cur_sum += Global.card_props[id].value
+						if cur_sum < min_spot_sum:
+							min_spot_sum = cur_sum
+							min_spot_idx = idx
+				var temp = new_own_spots[min_spot_idx].duplicate()
+				new_own_spots[min_spot_idx] = new_own_spots[spot_idx].duplicate()
+				new_own_spots[spot_idx] = temp
+			new_own_hand_cards.erase(card_id)
+			new_own_spots[spot_idx].append(card_id)
+				
+			if cur_depth == target_depth:
+				return [utility(is_maximizing, false, new_own_spots, new_other_spots, own_health, other_health), move]
+			else:
+				new_res = minimax(cur_depth + 1, target_depth, not is_maximizing, spots, other_base_values, new_own_base_vals, new_other_spots, new_own_spots, other_hand_card_ids, new_own_hand_cards, other_health, own_health, false)
+		else:
+			if has_passed:
+				return [utility(is_maximizing, true, own_spots_card_ids, other_spots_card_ids, own_health, other_health), move]
+			new_res = minimax(cur_depth + 1, target_depth, not is_maximizing, spots, other_base_values, own_base_values, other_spots_card_ids, own_spots_card_ids, other_hand_card_ids, own_hand_card_ids, other_health, own_health, true)
+		
+		var new_utility = -new_res[0]
+		if cur_depth <= 1: print(move, new_utility)
+		if is_maximizing:
+			if new_utility > extremal_utility:
+				extremal_move = move
+				extremal_utility = new_utility
+		else:
+			if new_utility < extremal_utility:
+				extremal_move = move
+				extremal_utility = new_utility
+	
+	return [extremal_utility, extremal_move]
+
+func utility(is_self: bool, passes: bool, own_spots_card_ids: Array, other_spots_card_ids: Array, own_health: float, other_health: float) -> float:
+	var inv = 1 if is_self else -1
+	
+	var own_damage = 0
+	var other_damage = 0
+	for idx in range(own_spots_card_ids.size()):
+		var is_reverse = false
+		var own_sum = 0
+		for card_id in own_spots_card_ids[idx]:
+			if card_id == 'rev':
+				is_reverse = not is_reverse
+			if card_id == 'rev':
+				is_reverse = not is_reverse
+			if Global.card_props[card_id].is_number:
+				own_sum += Global.card_props[card_id].value
+		var other_sum = 0
+		for card_id in other_spots_card_ids[idx]:
+			if card_id == 'rev':
+				is_reverse = not is_reverse
+			if card_id == 'rev':
+				is_reverse = not is_reverse
+			if Global.card_props[card_id].is_number:
+				other_sum += Global.card_props[card_id].value
+		
+		if is_reverse:
+			var temp
+			temp = own_sum
+			own_sum = other_sum
+			other_sum = temp
+		if own_sum > other_sum:
+			other_damage += own_sum - other_sum
+		if other_sum > own_sum:
+			own_damage += other_sum - own_sum
+	
+	if own_damage > own_health and passes:
+		return -999 * inv
+	
+	return (other_damage - own_damage * min(max(0.8, (other_health + 1) / (own_health + 1)), 3) - (2 if passes else 0)) * inv
+
+func can_place(card_id: String, own_spot_card_ids: Array, other_spot_card_ids: Array, own_base_value) -> bool:
+	var restriction: bool = true
+	
+	if own_base_value and Global.card_props[card_id].is_number:
+		restriction = own_base_value == Global.card_props[card_id].value
+	
+	if restriction:
+		if (not own_spot_card_ids.is_empty() and own_spot_card_ids[own_spot_card_ids.size() - 1] == 'blo') or (not other_spot_card_ids.is_empty() and other_spot_card_ids[other_spot_card_ids.size() - 1] == 'blo'):
+			return false
+		return true
+	return false
+
 func damage_enemy(amount: int) -> void:
 	if ((health - amount) >= 0):
 		health -= amount
