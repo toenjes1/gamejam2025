@@ -283,19 +283,19 @@ shape = SubResource("RectangleShape2D_5g2wd")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(54, 75)
-scale = Vector2(2.3, 2.3)
+scale = Vector2(2, 2)
 texture = ExtResource("1_mwg88")
 
 [node name="Sprite2D2" type="Sprite2D" parent="."]
 z_index = -1
 position = Vector2(54, -75)
-scale = Vector2(2.26744, 2.26744)
+scale = Vector2(2, 2)
 texture = ExtResource("1_mwg88")
 
 [node name="highlight" type="Sprite2D" parent="."]
 visible = false
 position = Vector2(54, 75)
-scale = Vector2(2.3, 2.3)
+scale = Vector2(2, 2)
 texture = ExtResource("2_lx47d")
 
 [node name="type" type="Label" parent="."]

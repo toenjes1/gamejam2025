@@ -42,6 +42,9 @@ var drop_spots = []
 var enemy_played_cards = []
 var menu = null
 
+var chrono_point_max = 3
+var chrono_point_current = 2
+
 var game_phase = 0
 # 0 := normales Kartenlegen beidseitig
 # 1 := einer hat gepasst, anderer darf eine Karte legen
