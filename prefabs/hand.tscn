@@ -14,7 +14,7 @@ var card_positions = []
 
 func _ready() -> void:
 	Global.hand = self
-	$healthDisplay.text = str(health)
+	$healthDisplay.text = \"HP: \" + str(health)
 
 func remove_card(card) -> void:
 	cards.erase(card)
@@ -65,10 +65,9 @@ func damage_player(amount: int) -> void:
 		amount = health
 		health = 0
 	for i in range(amount):
-		$healthDisplay.text = str(health+amount-i)
+		$healthDisplay.text = \"HP: \" + str(health+amount-i)
 		await get_tree().create_timer(0.05-i*0.002).timeout
-	$healthDisplay.text = str(health)
-
+	$healthDisplay.text = \"HP: \" + str(health)
 
 func _on_button_end_round_button_up() -> void:
 	if Global.game_phase == 0:
@@ -97,11 +96,11 @@ shape = SubResource("RectangleShape2D_a6gvt")
 disabled = true
 
 [node name="healthDisplay" type="Label" parent="."]
-offset_left = -64.0
-offset_top = -3.0
-offset_right = -4.0
-offset_bottom = 42.0
+offset_left = -119.0
+offset_top = -19.0
+offset_right = 1.0
+offset_bottom = 26.0
 theme_override_fonts/font = ExtResource("1_a6gvt")
-theme_override_font_sizes/font_size = 24
-text = "0"
+theme_override_font_sizes/font_size = 16
+text = "HP: 0"
 horizontal_alignment = 2

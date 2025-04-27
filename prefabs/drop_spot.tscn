@@ -1,8 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://cdcpxpfojuaeq"]
+[gd_scene load_steps=8 format=3 uid="uid://cdcpxpfojuaeq"]
 
 [ext_resource type="Texture2D" uid="uid://31opkp4ms3cq" path="res://assets/images/backdrop_elements/border.png" id="1_mwg88"]
 [ext_resource type="Texture2D" uid="uid://dkw1k3h357qhx" path="res://assets/images/backdrop_elements/border_hover.png" id="2_lx47d"]
 [ext_resource type="FontFile" uid="uid://c8w8hvebyg5yk" path="res://assets/PublicPixel.ttf" id="3_hk8yy"]
+[ext_resource type="Texture2D" uid="uid://cwkmspt7ee2md" path="res://assets/images/backdrop_elements/sum.png" id="4_dwgct"]
+[ext_resource type="Texture2D" uid="uid://fh8ec3el1d56" path="res://assets/images/backdrop_elements/lock.png" id="5_5l5vq"]
 
 [sub_resource type="GDScript" id="GDScript_5g2wd"]
 resource_name = "drop_spot"
@@ -340,26 +342,41 @@ scale = Vector2(2.3, 2.3)
 texture = ExtResource("2_lx47d")
 
 [node name="type" type="Label" parent="."]
-offset_left = 119.0
-offset_top = 111.0
-offset_right = 159.0
-offset_bottom = 134.0
+offset_left = 135.0
+offset_top = 121.0
+offset_right = 175.0
+offset_bottom = 144.0
 theme_override_fonts/font = ExtResource("3_hk8yy")
 
 [node name="sum" type="Label" parent="."]
-offset_left = 115.0
-offset_top = 18.0
-offset_right = 155.0
-offset_bottom = 41.0
+offset_left = 135.0
+offset_top = 11.0
+offset_right = 175.0
+offset_bottom = 34.0
 theme_override_fonts/font = ExtResource("3_hk8yy")
 text = "0"
 
 [node name="enemy_sum" type="Label" parent="."]
-offset_left = 115.0
-offset_top = -39.0
-offset_right = 155.0
-offset_bottom = -16.0
+offset_left = 136.0
+offset_top = -30.0
+offset_right = 176.0
+offset_bottom = -7.0
 theme_override_fonts/font = ExtResource("3_hk8yy")
 text = "0"
+
+[node name="Sum2" type="Sprite2D" parent="."]
+position = Vector2(120, -21)
+scale = Vector2(2, 2)
+texture = ExtResource("4_dwgct")
+
+[node name="Sum" type="Sprite2D" parent="."]
+position = Vector2(120, 20)
+scale = Vector2(2, 2)
+texture = ExtResource("4_dwgct")
+
+[node name="Lock" type="Sprite2D" parent="."]
+position = Vector2(119, 132)
+scale = Vector2(2, 2)
+texture = ExtResource("5_5l5vq")
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
