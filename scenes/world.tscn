@@ -321,10 +321,10 @@ scale = Vector2(2, 2)
 texture = ExtResource("1_k0juu")
 
 [node name="enemy_hand" parent="." instance=ExtResource("4_k0juu")]
-position = Vector2(207, -34)
+position = Vector2(237, -34)
 
 [node name="hand" parent="." instance=ExtResource("1_nnsk1")]
-position = Vector2(207, 453)
+position = Vector2(237, 453)
 
 [node name="drop_spot" parent="." instance=ExtResource("2_rwgxs")]
 position = Vector2(260, 236)

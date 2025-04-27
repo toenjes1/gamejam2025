@@ -31,7 +31,8 @@ func _physics_process(delta: float) -> void:
 
 func calculate_position(idx: float) -> Vector2:
 	if cards.size() > 1:
-		return Vector2(global_position.x + idx / (cards.size() - 1.0) * ($CollisionShape2D.shape.size.x - cards[idx].size.x),
+		var actual_width = $CollisionShape2D.shape.size.x + cards[idx].size.x * (-6 + min(cards.size() ** 1.45 / 2, 7 / 0.3) * 0.25 + (0.2 if cards.size() == 3 else 0))
+		return Vector2(global_position.x + ($CollisionShape2D.shape.size.x - actual_width) / 2.0 + idx / (cards.size() - 1.0) * (actual_width - cards[idx].size.x),
 			global_position.y)
 	elif cards.size() == 1:
 		return Vector2(global_position.x + ($CollisionShape2D.shape.size.x - cards[idx].size.x) / 2.0,
@@ -55,22 +56,22 @@ func add_card(new_card) -> void:
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uu4a1"]
-size = Vector2(610, 98)
+size = Vector2(550, 98)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a6gvt"]
-size = Vector2(958, 245)
+size = Vector2(898, 245)
 
 [node name="hand" type="Area2D"]
 script = SubResource("GDScript_uu4a1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(305, 49)
+position = Vector2(275, 49)
 shape = SubResource("RectangleShape2D_uu4a1")
 disabled = true
 
 [node name="dropArea" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="dropArea"]
-position = Vector2(305, 35.5)
+position = Vector2(275, 35.5)
 shape = SubResource("RectangleShape2D_a6gvt")
 disabled = true
