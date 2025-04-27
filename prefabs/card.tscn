@@ -67,7 +67,7 @@ func set_sprite_z_index(z):
 
 func drag_logic(delta: float) -> void:
 	$Sprite2D/shadow.position = Vector2(-12, 12).rotated($Sprite2D.rotation)
-	if is_drop_spotted or not is_player_card:
+	if is_drop_spotted:
 		$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)
 		if mouse_in:
 			_change_scale(card_scale * 1.1)
@@ -78,10 +78,11 @@ func drag_logic(delta: float) -> void:
 		if $Sprite2D.rotation_degrees != 0.0:
 			$Sprite2D.rotation_degrees = lerp($Sprite2D.rotation_degrees, 0.0, 2*rotation_velocity*delta)
 		return
-		
-		
+	
+	
 	if ((mouse_in or is_dragging)
 		and (Global.node_being_dragged == null or Global.node_being_dragged == self)):
+		
 		if Input.is_action_pressed(\"click\"):
 			global_position = lerp(global_position, 
 				get_global_mouse_position() - (size/2.0), drag_velocity*delta)
@@ -166,6 +167,18 @@ func half_texture() -> bool:
 		card_id = '1'
 	return true
 	
+func null_texture() -> bool:
+	if not Global.card_props[card_id]['is_number']:
+		return false
+
+	set_sprite_texture(load(\"res://assets/images/cards/0_card.png\"))
+	card_id = '0'
+
+	return true
+
+func become_card(card):
+	set_sprite_texture(card.front_texture)
+	card_id = card.card_id
 "
 
 [sub_resource type="Animation" id="Animation_5tooj"]

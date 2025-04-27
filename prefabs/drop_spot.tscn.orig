@@ -7,8 +7,6 @@
 resource_name = "drop_spot"
 script/source = "extends Area2D
 
-const max_stack_size: int = 4
-
 const snap_velocity = 15.0
 const vertical_offset = 23
 @onready var init_size = $CollisionShape2D.shape.size
@@ -19,23 +17,10 @@ var enemy_cards = []
 var player_cards_sum = 0
 var enemy_cards_sum = 0
 var base_value
-var base_value_enemy
 var restriction: bool
 
 func _ready() -> void:
 	Global.drop_spots.append(self)
-
-func player_is_full() -> bool:
-	return cards.size() >= max_stack_size
-
-func enemy_is_full() -> bool:
-	return enemy_cards.size() >= max_stack_size
-
-func player_is_empty() -> bool:
-	return cards.is_empty()
-
-func enemy_is_empty() -> bool:
-	return enemy_cards.is_empty()
 
 func empty_card_refs():
 	for idx in range(cards.size()):
@@ -44,16 +29,14 @@ func empty_card_refs():
 		enemy_cards[idx].queue_free()
 	cards = []
 	enemy_cards = []
-
-func add_enemy_card(card):
-	enemy_cards.append(card)
-	if (not base_value_enemy) and Global.is_card_num(card):
-		base_value_enemy = Global.get_card_val(card)
 	
 func special_is_restricted(card_id, stack) -> bool:
 	if not Global.card_props[card_id]['is_number']:
+<<<<<<< HEAD
 		if card_id == 'jok' and stack.is_empty():
 			return true
+=======
+>>>>>>> refs/remotes/origin/special_cards
 		return false
 	else:
 		return false
@@ -78,6 +61,7 @@ func activate_trap_card(card_id) -> void:
 				new_sum += Global.card_props[card.card_id]['value']
 		enemy_cards_sum = new_sum
 		$enemy_sum.text = str(enemy_cards_sum)
+<<<<<<< HEAD
 	
 	elif card_id == 'nul':
 		for card in cards:
@@ -92,6 +76,8 @@ func activate_trap_card(card_id) -> void:
 	
 	elif card_id == 'jok':
 		cards[cards.size() - 1].become_card(cards[cards.size() - 2])
+=======
+>>>>>>> refs/remotes/origin/special_cards
 
 func can_place(subject_id, own_stack, enemy_stack, base, checking_highlight) -> bool:
 	if checking_highlight and Global.node_being_dragged_is_player != 1:
@@ -99,10 +85,14 @@ func can_place(subject_id, own_stack, enemy_stack, base, checking_highlight) -> 
 	
 	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
 	
+<<<<<<< HEAD
 	if special_is_restricted(subject_id, own_stack):
 		return false
 	
 	if not base:
+=======
+	if not special_is_restricted(subject_id) or not base:
+>>>>>>> refs/remotes/origin/special_cards
 		restriction = true
 	else:
 		if Global.card_props[subject_id]['is_number']:
