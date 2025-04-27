@@ -62,7 +62,11 @@ func damage_player(amount: int) -> void:
 	if ((health - amount) >= 0):
 		health -= amount
 	else: 
+		amount = health
 		health = 0
+	for i in range(amount):
+		$healthDisplay.text = str(health+amount-i)
+		await get_tree().create_timer(0.05-i*0.002).timeout
 	$healthDisplay.text = str(health)
 
 

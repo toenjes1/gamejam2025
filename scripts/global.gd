@@ -1,7 +1,7 @@
 extends Node
 
 var player_seed = 69
-var enemy_seed = 456
+var enemy_seed = 457
 
 const card_base_path = 'res://assets/images/cards/'
 
@@ -18,12 +18,12 @@ var card_props = {
 	'9': {'name': "Nine", 'is_number': true, 'value': 9, 'texture': '9_card.png'},
 	'jok': {'name': "Joker", 'is_number': false, 'texture': 'joker_card.png'},
 	'blo': {'name': "Block", 'is_number': false, 'texture': 'block_card.png'},
-	'rig': {'name': "Right", 'is_number': false},
-	'lef': {'name': "Left", 'is_number': false},
-	'mov': {'name': "Move", 'is_number': false},
-	'rev': {'name': "Reverse", 'is_number': false},
+	'rig': {'name': "Right", 'is_number': false, 'texture': 'right_union_card.png'},
+	'lef': {'name': "Left", 'is_number': false, 'texture': 'left_union_card.png'},
+	'swa': {'name': "Swap", 'is_number': false, 'texture': 'swap_card.png'},
+	'rev': {'name': "Reverse", 'is_number': false, 'texture': 'reverse_card.png'},
 	'nul': {'name': "Nullify", 'is_number': false, 'texture': 'empty_card.png'},
-	'gen': {'name': "Genesis", 'is_number': false},
+	'gen': {'name': "Genesis", 'is_number': false, 'texture': 'genesis_card.png'},
 	'hal': {'name': "Half", 'is_number': false, 'texture': 'half_card.png'},
 }
 
@@ -32,14 +32,15 @@ const no_card_texture = preload(card_base_path + "no_card.png")
 var numb_card_ids = []
 var spec_card_ids = []
 
-var player_bag = ['jok', '8', '8', '8']
-var enemy_bag = ['9', '9', 'hal']
+var player_bag = []
+var enemy_bag = []
 
 const card_prefab = preload("res://prefabs/card.tscn")
 var hand = null
 var enemy_hand = null
 var drop_spots = []
-var played_cards = []
+var enemy_played_cards = []
+var menu = null
 
 var game_phase = 0
 # 0 := normales Kartenlegen beidseitig
@@ -122,7 +123,7 @@ func create_bag(seed: int) -> Array:
 	bag.shuffle()
 	return bag
 
-func spawn_player_card() -> void:
+func spawn_player_card() -> Node:
 	if player_bag.is_empty():
 		player_bag = create_bag(player_seed)
 	var new_card = spawn_card(player_bag[0], true)
@@ -133,22 +134,25 @@ func spawn_player_card() -> void:
 	for drop_spot in drop_spots:
 		new_card.got_dropped.connect(drop_spot.card_got_dropped)
 	hand.add_card(new_card)
+	return new_card
 
-func spawn_enemy_card() -> void:
+func spawn_enemy_card() -> Node:
 	if enemy_bag.is_empty():
 		enemy_bag = create_bag(enemy_seed)
 	var new_card = spawn_card(enemy_bag[0], false)
 	enemy_bag.remove_at(0)
 	new_card.is_player_card = false
 	enemy_hand.add_card(new_card)
+	return new_card
 
 func enemy_play(card, spot) -> Node:
 	spot.add_enemy_card(card)
+	spot.enemy_stack_z_index_update()
 	enemy_hand.cards.erase(card)
-	played_cards.append(card)
+	enemy_played_cards.append(card)
 	return spot
 
-func card_played(player_card) -> void:
+func card_played(player_card, card_drop) -> void:
 	var enemy_play
 	var drop_spot
 	if game_phase == 0:
@@ -162,20 +166,28 @@ func card_played(player_card) -> void:
 	await get_tree().create_timer(1).timeout
 	
 	player_card.turn_to_front()
-	played_cards[played_cards.size() - 1].turn_to_front()
-	player_card.dropped_location.calculate_sum(player_card.card_id)
-	player_card.dropped_location.set_type_display()
+	var blockage = card_drop.activate_trap_card(player_card, 'player')
+	enemy_played_cards[enemy_played_cards.size() - 1].turn_to_front()
+	if not blockage:
+		player_card.dropped_location.calculate_sum(player_card.card_id)
+		player_card.dropped_location.set_type_display()
 	
-	if game_phase == 0:
+	if game_phase == 0 and not blockage:
 		drop_spot.calculate_enemy_sum(enemy_play[0].card_id)
-		drop_spot.activate_trap_card(enemy_play[0].card_id)
+		drop_spot.activate_trap_card(enemy_play[0], 'enemy')
 	
 	if game_phase == 1:
 		cycle_phase('player')
 
+func menu_open(text):
+	menu.set_text(text)
+	menu.is_open = true
+	menu.anim_player.play("fade_in")
+	menu.visible = true
+
 func cycle_phase(caller) -> void:
 	game_phase = (game_phase + 1) % 3
-	print(game_phase)
+	
 	if game_phase == 1 and caller == 'player':
 		phase_one_player = 1
 	elif game_phase == 1 and caller != 'player':
@@ -183,17 +195,82 @@ func cycle_phase(caller) -> void:
 	if game_phase == 1 and phase_one_player == 1:
 		var enemy_play = enemy_hand.choose_move(drop_spots, hand.cards)
 		if not (enemy_play[0] == null and enemy_play[1] == null):
-			enemy_play(enemy_play[0], enemy_play[1])
+			var drop_spot = enemy_play(enemy_play[0], enemy_play[1])
 			enemy_play[0].is_drop_spotted = true
+			await get_tree().create_timer(1).timeout
+			enemy_played_cards[enemy_played_cards.size() - 1].turn_to_front()
+			drop_spot.calculate_enemy_sum(enemy_play[0].card_id)
+			drop_spot.activate_trap_card(enemy_play[0], 'enemy')
 		cycle_phase('enemy')
+		return
 	
-func accumulate_damages() -> void:
+	if game_phase == 2:
+		await get_tree().create_timer(1).timeout
+		var dmgs = await accumulate_damages()
+		if hand.health == 0 and enemy_hand.health == 0:
+			if dmgs[0] < dmgs[1]:
+				menu_open("You win")
+			else:
+				menu_open("You lose")
+			return
+		if hand.health == 0:
+			menu_open("You lose")
+			return
+		if enemy_hand.health == 0:
+			menu_open("You win")
+			return
+		await get_tree().create_timer(0.5).timeout
+		for spot in drop_spots:
+			for card in spot.cards:
+				spot.cards.erase(card)
+				card.queue_free()
+			if not spot.cards.is_empty():
+				var last_card = spot.cards[0]
+				spot.cards.erase(last_card)
+				last_card.queue_free()
+			
+			for card in spot.enemy_cards:
+				spot.enemy_cards.erase(card)
+				card.queue_free()
+			if not spot.enemy_cards.is_empty():
+				var last_card = spot.enemy_cards[0]
+				spot.enemy_cards.erase(last_card)
+				last_card.queue_free()
+			
+			spot.player_cards_sum = 0
+			spot.set_sum_display('0')
+			spot.enemy_cards_sum = 0
+			spot.set_enemy_sum_display('0')
+			spot.base_value = 0
+			spot.set_type_display()
+			spot.is_reversed = false
+		
+		for i in range(5):
+			Global.spawn_player_card()
+			Global.spawn_enemy_card()
+		hand.update_card_z_values()
+		enemy_hand.update_card_z_values()
+		
+		cycle_phase('game')
+	
+	
+func accumulate_damages():
 	var dmgPlayer = 0
 	var dmgEnemy = 0
 	for drop_spot in drop_spots:
-		if drop_spot.player_cards_sum > drop_spot.enemy_cards_sum:
-			dmgEnemy += (drop_spot.player_cards_sum - drop_spot.enemy_cards_sum)
+		if not drop_spot.is_reversed:
+			if drop_spot.player_cards_sum > drop_spot.enemy_cards_sum:
+				dmgEnemy += (drop_spot.player_cards_sum - drop_spot.enemy_cards_sum)
+			else:
+				dmgPlayer += (drop_spot.enemy_cards_sum - drop_spot.player_cards_sum)
 		else:
-			dmgPlayer += (drop_spot.enemy_cards_sum - drop_spot.player_cards_sum)
-	hand.damage_player(dmgPlayer)
-	enemy_hand.damage_enemy(dmgEnemy)
+			if drop_spot.player_cards_sum < drop_spot.enemy_cards_sum:
+				dmgEnemy += (drop_spot.enemy_cards_sum - drop_spot.player_cards_sum)
+			else:
+				dmgPlayer += (drop_spot.player_cards_sum -  drop_spot.enemy_cards_sum)
+	
+	await enemy_hand.damage_enemy(dmgEnemy)
+	await get_tree().create_timer(0.3).timeout
+	await hand.damage_player(dmgPlayer)
+	
+	return [dmgPlayer, dmgEnemy]

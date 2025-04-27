@@ -21,7 +21,7 @@ var player_cards_sum = 0
 var enemy_cards_sum = 0
 var base_value
 var base_value_enemy
-var restriction: bool
+var is_reversed = false
 
 func _ready() -> void:
 	Global.drop_spots.append(self)
@@ -50,35 +50,72 @@ func add_enemy_card(card):
 	enemy_cards.append(card)
 	if (not base_value_enemy) and Global.is_card_num(card):
 		base_value_enemy = Global.get_card_val(card)
-	
-func special_is_restricted(card_id, stack) -> bool:
-	if not Global.card_props[card_id]['is_number']:
-		if card_id == 'jok' and stack.is_empty():
-			return true
-		return false
-	else:
-		return false
 
-func activate_trap_card(card_id) -> void:
+func union_genesis_trap(target_drop_spot, of_player, is_union):
+	if of_player or not is_union:
+		for card in cards:
+			cards.erase(card)
+			if is_union:
+				target_drop_spot.cards.append(card)
+			else:
+				card.queue_free()
+		if not cards.is_empty():
+			var tmp = cards[cards.size() - 1]
+			cards.erase(tmp)
+			if is_union:
+				target_drop_spot.cards.append(tmp)
+			else:
+				tmp.queue_free()
+		if is_union:
+			target_drop_spot.player_cards_sum += player_cards_sum
+			target_drop_spot.set_sum_display(target_drop_spot.player_cards_sum)
+		player_cards_sum = 0
+		set_sum_display(0)
+		base_value = null
+		set_type_display()
+	if not of_player or not is_union:
+		for card in enemy_cards:
+			enemy_cards.erase(card)
+			if is_union:
+				target_drop_spot.enemy_cards.append(card)
+			else:
+				card.queue_free()
+		if not enemy_cards.is_empty():
+			var tmp = enemy_cards[enemy_cards.size() - 1]
+			enemy_cards.erase(tmp)
+			if is_union:
+				target_drop_spot.enemy_cards.append(tmp)
+			else:
+				tmp.queue_free()
+		if is_union:
+			target_drop_spot.enemy_cards_sum += enemy_cards_sum
+			target_drop_spot.set_enemy_sum_display(target_drop_spot.enemy_cards_sum)
+		enemy_cards_sum = 0
+		set_enemy_sum_display(0)
+
+func activate_trap_card(trap_card, activator) -> bool:
+	var card_id = trap_card.card_id
 	if Global.card_props[card_id]['is_number']:
-		return
+		return false
 	
 	if card_id == 'hal':
 		var new_sum = 0
 		for card in cards:
+			print(card.card_id)
 			var is_number = card.half_texture()
 			if is_number:
 				new_sum += Global.card_props[card.card_id]['value']
 		player_cards_sum = new_sum
-		$sum.text = str(player_cards_sum)
+		set_sum_display(new_sum)
 		
 		new_sum = 0
 		for card in enemy_cards:
+			print(card.card_id)
 			var is_number = card.half_texture()
 			if is_number:
 				new_sum += Global.card_props[card.card_id]['value']
 		enemy_cards_sum = new_sum
-		$enemy_sum.text = str(enemy_cards_sum)
+		set_enemy_sum_display(new_sum)
 	
 	elif card_id == 'nul':
 		for card in cards:
@@ -89,25 +126,80 @@ func activate_trap_card(card_id) -> void:
 		for card in enemy_cards:
 			card.null_texture()
 		enemy_cards_sum = 0
-		$sum.text = str(enemy_cards_sum)
+		$enemy_sum.text = str(enemy_cards_sum)
 	
 	elif card_id == 'jok':
-		cards[cards.size() - 1].become_card(cards[cards.size() - 2])
+		if cards.size() < 2:
+			trap_card.set_sprite_texture(load(\"res://assets/images/cards/0_card.png\"))
+			card_id = '0'
+		else:
+			cards[cards.size() - 1].become_card(cards[cards.size() - 2])
+	
+	elif card_id == 'rev':
+		is_reversed = !is_reversed
+	
+	elif card_id == 'rig':
+		var target_drop_spot = Global.drop_spots[Global.drop_spots.find(self) + 1]
+		if activator == 'player':
+			union_genesis_trap(target_drop_spot, true, true)
+		if activator == 'enemy':
+			union_genesis_trap(target_drop_spot, false, true)
+			
+	elif card_id == 'lef':
+		var target_drop_spot = Global.drop_spots[Global.drop_spots.find(self) - 1]
+		if activator == 'player':
+			union_genesis_trap(target_drop_spot, true, true)
+		if activator == 'enemy':
+			union_genesis_trap(target_drop_spot, false, true)
+	
+	elif card_id == 'swa':
+		var chose_stack = false
+		#while (not chose_stack):
+		if Input.is_action_pressed(\"click\"):
+			var location = get_global_mouse_position()
+			for spot in Global.drop_spots:
+				var guard: bool = Rect2(spot.get_child(1).global_position - spot.get_child(1).shape.size / 2.0, spot.get_child(1).shape.size).has_point(location) and not spot.cards.is_empty()
+				print(guard)
+	
+	elif card_id == 'gen':
+		union_genesis_trap(self, true, false)
+		var player_side = Global.spawn_player_card()
+		Global.hand.remove_card(player_side)
+		cards.append(player_side)
+		player_side.turn_to_front()
+		var enemy_side = Global.spawn_enemy_card()
+		Global.enemy_hand.remove_card(enemy_side)
+		enemy_cards.append(enemy_side)
+		enemy_side.turn_to_front()
+		
+		if not Global.card_props[player_side.card_id]['is_number']:
+			player_cards_sum = 0
+			base_value = null
+			activate_trap_card(player_side, 'player')
+		if not Global.card_props[enemy_side.card_id]['is_number']:
+			enemy_cards_sum = 0
+			activate_trap_card(enemy_side, 'enemy')
+		if Global.card_props[player_side.card_id]['is_number']:
+			player_cards_sum = Global.card_props[player_side.card_id]['value']
+			base_value = Global.card_props[player_side.card_id]['value']
+		if Global.card_props[enemy_side.card_id]['is_number']:
+			enemy_cards_sum = Global.card_props[enemy_side.card_id]['value']
+			
+		set_sum_display(player_cards_sum)
+		set_type_display()
+		$enemy_sum.text = '0'
+		return true
+	return false
 
 func can_place(subject_id, own_stack, enemy_stack, base, checking_highlight) -> bool:
 	if checking_highlight and Global.node_being_dragged_is_player != 1:
 		return false
-	
+
 	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
 	
-	if special_is_restricted(subject_id, own_stack):
-		return false
-	
-	if not base:
-		restriction = true
-	else:
-		if Global.card_props[subject_id]['is_number']:
-			restriction = base == Global.card_props[subject_id]['value']
+	var restriction: bool = true
+	if base and Global.card_props[subject_id]['is_number']:
+		restriction = base == Global.card_props[subject_id]['value']
 	
 	if ((checking_highlight and guard != is_highlighted) or guard) and restriction:
 		if (not own_stack.is_empty() and own_stack[own_stack.size() - 1].card_id == 'blo') or (not enemy_stack.is_empty() and enemy_stack[enemy_stack.size() - 1].card_id == 'blo'):
@@ -127,11 +219,13 @@ func _physics_process(delta: float) -> void:
 		return
 	for idx in range(enemy_cards.size()):
 		enemy_cards[idx].global_position = lerp(enemy_cards[idx].global_position, $Sprite2D2.global_position - enemy_cards[idx].size / 2 - Vector2(0, idx * 23), 15 * delta)
+		
 
 func card_got_dropped(card) -> void:
 	if can_place(card.card_id, cards, enemy_cards, base_value, false):
 		cards.append(card)
 		card.drop_spotted()
+		Global.card_played(card, self)
 		card.set_sprite_z_index(cards.size() - 1)
 		card.get_parent().move_child(card, -1)
 		card.turn_to_back()
@@ -141,7 +235,6 @@ func card_got_dropped(card) -> void:
 		is_highlighted = false
 		if Global.card_props[card.card_id]['is_number'] and not base_value:
 			base_value = Global.card_props[card.card_id]['value']
-		activate_trap_card(card.card_id)
 
 func _toggle_highlight():
 	if is_highlighted:
@@ -159,11 +252,23 @@ func calculate_sum(new_card):
 func set_type_display():
 	if base_value:
 		$type.text = str(base_value)
+	else:
+		$type.text = \"\"
+
+func set_sum_display(input):
+	$sum.text = str(input)
+
+func set_enemy_sum_display(input):
+	$enemy_sum.text = str(input)
 	
 func calculate_enemy_sum(new_card):
 	if Global.card_props[new_card]['is_number']:
 		enemy_cards_sum += Global.card_props[new_card]['value']
 		$enemy_sum.text = str(enemy_cards_sum)
+
+func enemy_stack_z_index_update():
+	for idx in range(enemy_cards.size()):
+		enemy_cards[idx].set_sprite_z_index(idx)
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5g2wd"]
