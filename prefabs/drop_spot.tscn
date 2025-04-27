@@ -131,7 +131,7 @@ func activate_trap_card(trap_card, activator) -> bool:
 	elif card_id == 'jok':
 		if cards.size() < 2:
 			trap_card.set_sprite_texture(load(\"res://assets/images/cards/0_card.png\"))
-			card_id = '0'
+			trap_card.set_card_id('0')
 		else:
 			cards[cards.size() - 1].become_card(cards[cards.size() - 2])
 	

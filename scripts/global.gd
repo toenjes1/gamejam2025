@@ -6,25 +6,25 @@ var enemy_seed = 457
 const card_base_path = 'res://assets/images/cards/'
 
 var card_props = {
-	'0': {'name': "Zero", 'is_number': true, 'value': 0, 'texture': '0_card.png'},
-	'1': {'name': "One", 'is_number': true, 'value': 1, 'texture': '1_card.png'},
-	'2': {'name': "Two", 'is_number': true, 'value': 2, 'texture': '2_card.png'},
-	'3': {'name': "Three", 'is_number': true, 'value': 3, 'texture': '3_card.png'},
-	'4': {'name': "Four", 'is_number': true, 'value': 4, 'texture': '4_card.png'},
-	'5': {'name': "Five", 'is_number': true, 'value': 5, 'texture': '5_card.png'},
-	'6': {'name': "Six", 'is_number': true, 'value': 6, 'texture': '6_card.png'},
-	'7': {'name': "Seven", 'is_number': true, 'value': 7, 'texture': '7_card.png'},
-	'8': {'name': "Eight", 'is_number': true, 'value': 8, 'texture': '8_card.png'},
-	'9': {'name': "Nine", 'is_number': true, 'value': 9, 'texture': '9_card.png'},
-	'jok': {'name': "Joker", 'is_number': false, 'texture': 'joker_card.png'},
-	'blo': {'name': "Block", 'is_number': false, 'texture': 'block_card.png'},
-	'rig': {'name': "Right", 'is_number': false, 'texture': 'right_union_card.png'},
-	'lef': {'name': "Left", 'is_number': false, 'texture': 'left_union_card.png'},
-	'swa': {'name': "Swap", 'is_number': false, 'texture': 'swap_card.png'},
-	'rev': {'name': "Reverse", 'is_number': false, 'texture': 'reverse_card.png'},
-	'nul': {'name': "Nullify", 'is_number': false, 'texture': 'empty_card.png'},
-	'gen': {'name': "Genesis", 'is_number': false, 'texture': 'genesis_card.png'},
-	'hal': {'name': "Half", 'is_number': false, 'texture': 'half_card.png'},
+	'0': {'name': "Zero", 'is_number': true, 'value': 0, 'texture': '0_card.png', 'description': "I'm really sorry for you... This must be hard."},
+	'1': {'name': "One", 'is_number': true, 'value': 1, 'texture': '1_card.png', 'description': "How did you get hear?!"},
+	'2': {'name': "Two", 'is_number': true, 'value': 2, 'texture': '2_card.png', 'description': "This hasn't a lot of value, now, has it?"},
+	'3': {'name': "Three", 'is_number': true, 'value': 3, 'texture': '3_card.png', 'description': "Trinity."},
+	'4': {'name': "Four", 'is_number': true, 'value': 4, 'texture': '4_card.png', 'description': "Möm."},
+	'5': {'name': "Five", 'is_number': true, 'value': 5, 'texture': '5_card.png', 'description': "Yay, primes!"},
+	'6': {'name': "Six", 'is_number': true, 'value': 6, 'texture': '6_card.png', 'description': "Why is 6 afraid of 7?"},
+	'7': {'name': "Seven", 'is_number': true, 'value': 7, 'texture': '7_card.png', 'description': "Because 7 8 9."},
+	'8': {'name': "Eight", 'is_number': true, 'value': 8, 'texture': '8_card.png', 'description': "Infinity's idiotic cousin."},
+	'9': {'name': "Nine", 'is_number': true, 'value': 9, 'texture': '9_card.png', 'description': "Trinity squared."},
+	'jok': {'name': "Joker", 'is_number': false, 'texture': 'joker_card.png', 'description': "Can be played on top of another number and counts as it."},
+	'blo': {'name': "Block", 'is_number': false, 'texture': 'block_card.png', 'description': "Once played, no one can play on this lane anymore."},
+	'rig': {'name': "Right", 'is_number': false, 'texture': 'right_union_card.png', 'description': "Push your stack on top of the one to its right."},
+	'lef': {'name': "Left", 'is_number': false, 'texture': 'left_union_card.png', 'description': "Push your stack on top of the one to its left."},
+	'swa': {'name': "Swap", 'is_number': false, 'texture': 'swap_card.png', 'description': "Swap this stack with another one that has the lowest sum."},
+	'rev': {'name': "Reverse", 'is_number': false, 'texture': 'reverse_card.png', 'description': "The objective is now switched! Get the lowest points?"},
+	'nul': {'name': "Nullify", 'is_number': false, 'texture': 'empty_card.png', 'description': "Nullify all numbered cards in the lane."},
+	'gen': {'name': "Genesis", 'is_number': false, 'texture': 'genesis_card.png', 'description': "Delete EVERYTHING in this lane. Draw each a card to put here."},
+	'hal': {'name': "Half", 'is_number': false, 'texture': 'half_card.png', 'description': "Half the value of all numbered cards."},
 }
 
 const no_card_texture = preload(card_base_path + "no_card.png")
@@ -252,8 +252,7 @@ func cycle_phase(caller) -> void:
 		enemy_hand.update_card_z_values()
 		
 		cycle_phase('game')
-	
-	
+
 func accumulate_damages():
 	var dmgPlayer = 0
 	var dmgEnemy = 0
