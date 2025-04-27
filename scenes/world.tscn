@@ -1,4 +1,4 @@
-[gd_scene load_steps=49 format=3 uid="uid://brdcotededjl4"]
+[gd_scene load_steps=50 format=3 uid="uid://brdcotededjl4"]
 
 [ext_resource type="Texture2D" uid="uid://cyje0wsg1ufd3" path="res://assets/images/backdrop_elements/background_aermel.png" id="1_jhx03"]
 [ext_resource type="PackedScene" uid="uid://21g32hmxh8h5" path="res://prefabs/hand.tscn" id="1_nnsk1"]
@@ -94,28 +94,28 @@ _data = {
 &"idle": SubResource("Animation_7r4gi")
 }
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_i7141"]
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_jhx03"]
 lifetime_randomness = 0.15
 particle_flag_disable_z = true
-angle_min = -137.9
-angle_max = 248.3
-inherit_velocity_ratio = 0.758
+angle_min = -180.0
+angle_max = 180.0
 spread = 14.516
 flatness = 0.129
 initial_velocity_max = 10.0
 angular_velocity_min = -1.60933e-05
-angular_velocity_max = -1.60933e-05
+angular_velocity_max = 4.99998
 orbit_velocity_min = 0.1
 orbit_velocity_max = 0.3
 radial_velocity_min = -2.23517e-05
-radial_velocity_max = 66.0
+radial_velocity_max = 50.0
 gravity = Vector3(0, 0, 0)
 linear_accel_min = -2.23517e-06
 linear_accel_max = -2.23517e-06
 radial_accel_min = -2.23517e-06
 radial_accel_max = -2.23517e-06
-tangential_accel_min = -100.0
-tangential_accel_max = -77.74
+tangential_accel_min = -50.0
+tangential_accel_max = -25.0
+damping_max = 15.0
 scale_max = 10.0
 scale_over_velocity_max = 50.0
 color = Color(0.419608, 0.286275, 0.984314, 0.529412)
@@ -125,9 +125,8 @@ anim_speed_max = 1.74
 anim_offset_max = 0.0498
 turbulence_enabled = true
 turbulence_noise_strength = 0.35
-turbulence_noise_scale = 4.865
-turbulence_influence_min = 0.078
-turbulence_influence_max = 0.139
+turbulence_noise_scale = 2.534
+turbulence_influence_max = 0.2
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_w7kh3"]
 atlas = ExtResource("6_7r4gi")
@@ -326,6 +325,38 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_o8fc1"]
+lifetime_randomness = 0.33
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(35, 1, 1)
+angle_min = -137.9
+angle_max = 248.3
+inherit_velocity_ratio = 0.758
+direction = Vector3(0, -60, 0)
+spread = 75.0
+flatness = 0.129
+initial_velocity_max = 75.0
+orbit_velocity_min = 9.49949e-08
+orbit_velocity_max = 0.0500001
+gravity = Vector3(0, 0, 0)
+linear_accel_min = -2.0
+linear_accel_max = 2.0
+tangential_accel_min = -2.23517e-06
+tangential_accel_max = 50.0
+scale_max = 10.0
+scale_over_velocity_max = 50.0
+color = Color(0.419608, 0.286275, 0.984314, 0.529412)
+hue_variation_min = -0.03
+hue_variation_max = 0.03
+anim_speed_max = 1.74
+anim_offset_max = 0.0498
+turbulence_enabled = true
+turbulence_noise_strength = 0.35
+turbulence_noise_scale = 4.865
+turbulence_influence_min = 0.078
+turbulence_influence_max = 0.139
+
 [node name="world" type="Node2D"]
 script = SubResource("GDScript_4wyf3")
 
@@ -414,13 +445,20 @@ position = Vector2(36, 36)
 scale = Vector2(2, 2)
 amount = 50
 lifetime = 1.2
-process_material = SubResource("ParticleProcessMaterial_i7141")
+process_material = SubResource("ParticleProcessMaterial_jhx03")
 
 [node name="animation_hourglass" type="AnimatedSprite2D" parent="button_chrono"]
 position = Vector2(36, 36)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_817gm")
 frame_progress = 0.546459
+
+[node name="particles_aermel" type="GPUParticles2D" parent="."]
+position = Vector2(87, 579)
+scale = Vector2(2, 2)
+amount = 40
+lifetime = 2.5
+process_material = SubResource("ParticleProcessMaterial_o8fc1")
 
 [connection signal="button_up" from="button_end_round" to="hand" method="_on_button_end_round_button_up"]
 [connection signal="button_up" from="button_menu" to="menu" method="_on_button_menu_pressed"]

@@ -92,9 +92,9 @@ disabled = true
 
 [node name="healthDisplay" type="Label" parent="."]
 offset_left = -64.0
-offset_top = 74.0
+offset_top = -3.0
 offset_right = -4.0
-offset_bottom = 119.0
+offset_bottom = 42.0
 theme_override_fonts/font = ExtResource("1_a6gvt")
 theme_override_font_sizes/font_size = 24
 text = "0"
