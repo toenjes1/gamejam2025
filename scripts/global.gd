@@ -32,8 +32,8 @@ const no_card_texture = preload(card_base_path + "no_card.png")
 var numb_card_ids = []
 var spec_card_ids = []
 
-var player_bag = []
-var enemy_bag = []
+var player_bag = ['swa']
+var enemy_bag = ['1','1','1','1','1']
 
 const card_prefab = preload("res://prefabs/card.tscn")
 var hand = null
