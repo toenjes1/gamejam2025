@@ -67,7 +67,8 @@ func damage_player(amount: int) -> void:
 
 
 func _on_button_end_round_button_up() -> void:
-	damage_player(2) # Replace with function body.
+	if Global.game_phase == 0:
+		Global.cycle_phase('player')
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uu4a1"]

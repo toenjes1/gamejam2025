@@ -81,9 +81,11 @@ func drag_logic(delta: float) -> void:
 	
 	
 	if ((mouse_in or is_dragging)
-		and (Global.node_being_dragged == null or Global.node_being_dragged == self)):
+		and (Global.node_being_dragged == null or Global.node_being_dragged == self)
+		):
 		
-		if Input.is_action_pressed(\"click\"):
+		if (Input.is_action_pressed(\"click\")
+		and (Global.game_phase == 0 or (Global.game_phase == 1 and Global.phase_one_player == 0))):
 			global_position = lerp(global_position, 
 				get_global_mouse_position() - (size/2.0), drag_velocity*delta)
 			_change_scale(card_scale * 1.3)

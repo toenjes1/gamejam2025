@@ -47,6 +47,8 @@ func add_card(new_card) -> void:
 	cards.append(new_card)
 
 func choose_move(spots: Array, player_cards: Array) -> Array:
+	if cards.is_empty():
+		return [null, null]
 	var chosen_spot = spots[0]
 	var chosen_card = cards[0]
 	spots.shuffle()

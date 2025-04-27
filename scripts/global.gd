@@ -41,6 +41,14 @@ var enemy_hand = null
 var drop_spots = []
 var played_cards = []
 
+var game_phase = 0
+# 0 := normales Kartenlegen beidseitig
+# 1 := einer hat gepasst, anderer darf eine Karte legen
+# 2 := Runde vorbei, Vergleich wird durchgeführt
+var phase_one_player
+# 0 := player
+# 1 := enemy
+
 var node_being_dragged: Node = null
 var node_being_dragged_is_player: int = -1
 # -1 := no card being dragged
@@ -129,7 +137,7 @@ func spawn_player_card() -> void:
 func spawn_enemy_card() -> void:
 	if enemy_bag.is_empty():
 		enemy_bag = create_bag(enemy_seed)
-	var new_card = spawn_card(enemy_bag[0], true)
+	var new_card = spawn_card(enemy_bag[0], false)
 	enemy_bag.remove_at(0)
 	new_card.is_player_card = false
 	enemy_hand.add_card(new_card)
@@ -141,13 +149,41 @@ func enemy_play(card, spot) -> Node:
 	return spot
 
 func card_played(player_card) -> void:
-	var enemy_play = enemy_hand.choose_move(drop_spots, hand.cards)
-	var drop_spot = enemy_play(enemy_play[0], enemy_play[1])
-	enemy_play[0].is_drop_spotted = true
+	var enemy_play
+	var drop_spot
+	if game_phase == 0:
+		enemy_play = enemy_hand.choose_move(drop_spots, hand.cards)
+		if enemy_play[0] == null and enemy_play[1] == null:
+			cycle_phase('enemy')
+		else:
+			drop_spot = enemy_play(enemy_play[0], enemy_play[1])
+			enemy_play[0].is_drop_spotted = true
+	
 	await get_tree().create_timer(1).timeout
+	
 	player_card.turn_to_front()
 	played_cards[played_cards.size() - 1].turn_to_front()
 	player_card.dropped_location.calculate_sum(player_card.card_id)
-	drop_spot.calculate_enemy_sum(enemy_play[0].card_id)
 	player_card.dropped_location.set_type_display()
-	drop_spot.activate_trap_card(enemy_play[0].card_id)
+	
+	if game_phase == 0:
+		drop_spot.calculate_enemy_sum(enemy_play[0].card_id)
+		drop_spot.activate_trap_card(enemy_play[0].card_id)
+	
+	if game_phase == 1:
+		cycle_phase('player')
+
+func cycle_phase(caller) -> void:
+	game_phase = (game_phase + 1) % 3
+	print(game_phase)
+	if game_phase == 1 and caller == 'player':
+		phase_one_player = 1
+	elif game_phase == 1 and caller != 'player':
+		phase_one_player = 0
+	if game_phase == 1 and phase_one_player == 1:
+		var enemy_play = enemy_hand.choose_move(drop_spots, hand.cards)
+		if not (enemy_play[0] == null and enemy_play[1] == null):
+			enemy_play(enemy_play[0], enemy_play[1])
+			enemy_play[0].is_drop_spotted = true
+		cycle_phase('enemy')
+	

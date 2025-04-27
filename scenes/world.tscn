@@ -21,6 +21,7 @@ script/source = "extends Node2D
 func _ready():
 	for i in range(5):
 		Global.spawn_player_card()
+	for i in range(3):
 		Global.spawn_enemy_card()
 "
 

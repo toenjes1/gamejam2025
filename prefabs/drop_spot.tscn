@@ -82,12 +82,12 @@ func activate_trap_card(card_id) -> void:
 	
 	elif card_id == 'nul':
 		for card in cards:
-			var is_number = card.null_texture()
+			card.null_texture()
 		player_cards_sum = 0
 		$sum.text = str(player_cards_sum)
 		
 		for card in enemy_cards:
-			var is_number = card.null_texture()
+			card.null_texture()
 		enemy_cards_sum = 0
 		$sum.text = str(enemy_cards_sum)
 	
