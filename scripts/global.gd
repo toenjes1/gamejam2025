@@ -35,8 +35,8 @@ const drop_point_prefab = preload("res://prefabs/drop_spot.tscn")
 var numb_card_ids = []
 var spec_card_ids = []
 
-var player_bag = ['swa']
-var enemy_bag = ['1','1','1','1','1']
+var player_bag = []
+var enemy_bag = []
 
 const card_prefab = preload("res://prefabs/card.tscn")
 var hand = null
@@ -263,7 +263,7 @@ func spawn_player_card_from_id(id) -> Node:
 func spawn_enemy_card() -> Node:
 	if enemy_bag.is_empty():
 		enemy_bag = create_bag(enemy_seed)
-	var new_card = spawn_card(enemy_bag[0], false)
+	var new_card = spawn_card(enemy_bag[0], true)
 	enemy_bag.remove_at(0)
 	new_card.is_player_card = false
 	enemy_hand.add_card(new_card)
