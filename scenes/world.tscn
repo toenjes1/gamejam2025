@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://ixsc14xb5hwo" path="res://assets/images/other/empty36x36.png" id="6_4mrxx"]
 [ext_resource type="Texture2D" uid="uid://vkofk253ua1s" path="res://animation/hourglass_animation.png" id="6_7r4gi"]
 [ext_resource type="Texture2D" uid="uid://btg0qqpbsi57n" path="res://assets/images/buttons/button_end_press.png" id="6_o8fc1"]
-[ext_resource type="PackedScene" path="res://prefabs/chrono_choice.tscn" id="7_i7141"]
+[ext_resource type="PackedScene" uid="uid://fpjlb2wopxam" path="res://prefabs/chrono_choice.tscn" id="7_i7141"]
 [ext_resource type="Texture2D" uid="uid://bfys1nmutsmkw" path="res://assets/images/buttons/button_end_hover.png" id="7_xo05s"]
 [ext_resource type="Texture2D" uid="uid://dueabum8mjrqb" path="res://assets/images/other/shadow.png" id="10_w7kh3"]
 
@@ -22,6 +22,10 @@ func _ready():
 	for i in range(5):
 		Global.spawn_player_card()
 		Global.spawn_enemy_card()
+
+
+func _on_button_end_round_button_up() -> void:
+	Global.accumulate_damages()
 "
 
 [sub_resource type="GDScript" id="GDScript_e3hyu"]
@@ -460,6 +464,7 @@ amount = 40
 lifetime = 2.5
 process_material = SubResource("ParticleProcessMaterial_o8fc1")
 
+[connection signal="button_up" from="button_end_round" to="." method="_on_button_end_round_button_up"]
 [connection signal="button_up" from="button_end_round" to="hand" method="_on_button_end_round_button_up"]
 [connection signal="button_up" from="button_menu" to="menu" method="_on_button_menu_pressed"]
 [connection signal="button_up" from="button_menu" to="button_menu" method="_on_button_up"]

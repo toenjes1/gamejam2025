@@ -151,3 +151,14 @@ func card_played(player_card) -> void:
 	drop_spot.calculate_enemy_sum(enemy_play[0].card_id)
 	player_card.dropped_location.set_type_display()
 	drop_spot.activate_trap_card(enemy_play[0].card_id)
+	
+func accumulate_damages() -> void:
+	var dmgPlayer = 0
+	var dmgEnemy = 0
+	for drop_spot in drop_spots:
+		if drop_spot.player_cards_sum > drop_spot.enemy_cards_sum:
+			dmgEnemy += (drop_spot.player_cards_sum - drop_spot.enemy_cards_sum)
+		else:
+			dmgPlayer += (drop_spot.enemy_cards_sum - drop_spot.player_cards_sum)
+	hand.damage_player(dmgPlayer)
+	enemy_hand.damage_enemy(dmgEnemy)
