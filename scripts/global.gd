@@ -40,7 +40,6 @@ var hand = null
 var enemy_hand = null
 var drop_spots = []
 var played_cards = []
-var played_card_positions = []
 
 var node_being_dragged: Node = null
 var node_being_dragged_is_player: int = -1
@@ -80,12 +79,6 @@ func get_card_val(card) -> int:
 
 func is_card_num(card) -> bool:
 	return card_props[card.card_id].is_number
-
-func _physics_process(delta: float) -> void:
-	if played_cards.is_empty():
-		return
-	for idx in range(played_cards.size()):
-		played_cards[idx].global_position = lerp(played_cards[idx].global_position, played_card_positions[idx], 15 * delta)
 
 func random_numb_card_id(rng: RandomNumberGenerator) -> String:
 	return numb_card_ids[rng.randi_range(0, numb_card_ids.size() - 1)]
@@ -143,10 +136,8 @@ func spawn_enemy_card() -> void:
 
 func enemy_play(card, spot) -> Node:
 	spot.add_enemy_card(card)
-	var move_to = spot.get_child(2).global_position - card.size / 2 - Vector2(0, (spot.enemy_cards.size() - 1) * 23)
 	enemy_hand.cards.erase(card)
 	played_cards.append(card)
-	played_card_positions.append(move_to)
 	return spot
 
 func card_played(player_card) -> void:

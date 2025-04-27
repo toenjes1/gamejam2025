@@ -122,6 +122,11 @@ func _physics_process(delta: float) -> void:
 	
 	if Global.node_being_dragged and can_place(Global.node_being_dragged.card_id, cards, enemy_cards, base_value, true):
 		_toggle_highlight()
+	
+	if enemy_cards.is_empty():
+		return
+	for idx in range(enemy_cards.size()):
+		enemy_cards[idx].global_position = lerp(enemy_cards[idx].global_position, $Sprite2D2.global_position - enemy_cards[idx].size / 2 - Vector2(0, idx * 23), 15 * delta)
 
 func card_got_dropped(card) -> void:
 	if can_place(card.card_id, cards, enemy_cards, base_value, false):
