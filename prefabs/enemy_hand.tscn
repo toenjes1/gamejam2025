@@ -240,6 +240,10 @@ func damage_enemy(amount: int) -> void:
 		$healthDisplay.text = \"HP: \" + str(health+amount-i)
 		await get_tree().create_timer(0.05-i*0.002).timeout
 	$healthDisplay.text = \"HP: \" + str(health)
+
+func set_health(amount: int) -> void:
+	health = amount
+	$healthDisplay.text = str(amount)
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_uu4a1"]
