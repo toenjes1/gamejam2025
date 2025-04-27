@@ -142,7 +142,7 @@ func spawn_player_card() -> Node:
 func spawn_enemy_card() -> Node:
 	if enemy_bag.is_empty():
 		enemy_bag = create_bag(enemy_seed)
-	var new_card = spawn_card(enemy_bag[0], true)
+	var new_card = spawn_card(enemy_bag[0], false)
 	enemy_bag.remove_at(0)
 	new_card.is_player_card = false
 	enemy_hand.add_card(new_card)

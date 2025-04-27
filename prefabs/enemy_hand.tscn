@@ -98,7 +98,7 @@ func minimax(cur_depth: int, target_depth: int, is_maximizing: bool, spots: Arra
 				possible_moves.append([card_id, spot_idx])
 	#possible_moves.append([null, null])
 	
-	if cur_depth <= 1: print(possible_moves)
+	#if cur_depth <= 1: print(possible_moves)
 	var extremal_utility = -1000 if is_maximizing else 1000
 	var extremal_move = [null, null]
 	
@@ -167,7 +167,7 @@ func minimax(cur_depth: int, target_depth: int, is_maximizing: bool, spots: Arra
 			new_res = minimax(cur_depth + 1, target_depth, not is_maximizing, spots, other_base_values, own_base_values, other_spots_card_ids, own_spots_card_ids, other_hand_card_ids, own_hand_card_ids, other_health, own_health, true)
 		
 		var new_utility = -new_res[0]
-		if cur_depth <= 1: print(move, new_utility)
+		#if cur_depth <= 1: print(move, new_utility)
 		if is_maximizing:
 			if new_utility > extremal_utility:
 				extremal_move = move
