@@ -1,15 +1,17 @@
-[gd_scene load_steps=46 format=3 uid="uid://brdcotededjl4"]
+[gd_scene load_steps=49 format=3 uid="uid://brdcotededjl4"]
 
-[ext_resource type="Texture2D" uid="uid://chqblap3qbbjh" path="res://assets/images/backdrop_elements/background.png" id="1_k0juu"]
+[ext_resource type="Texture2D" uid="uid://cyje0wsg1ufd3" path="res://assets/images/backdrop_elements/background_aermel.png" id="1_jhx03"]
 [ext_resource type="PackedScene" uid="uid://21g32hmxh8h5" path="res://prefabs/hand.tscn" id="1_nnsk1"]
 [ext_resource type="PackedScene" uid="uid://cdcpxpfojuaeq" path="res://prefabs/drop_spot.tscn" id="2_rwgxs"]
 [ext_resource type="PackedScene" uid="uid://dh0jkpep4cp4u" path="res://prefabs/enemy_hand.tscn" id="4_k0juu"]
 [ext_resource type="Texture2D" uid="uid://q7cjhwxya77o" path="res://assets/images/buttons/exit.png" id="5_e3hyu"]
 [ext_resource type="PackedScene" uid="uid://5imjke14lsdw" path="res://prefabs/menu.tscn" id="5_i7141"]
-[ext_resource type="Texture2D" uid="uid://7ll5deyfl15q" path="res://icon.svg" id="5_qfnet"]
+[ext_resource type="Texture2D" uid="uid://cfwccb861q0cw" path="res://assets/images/buttons/button_end.png" id="5_jhx03"]
 [ext_resource type="Texture2D" uid="uid://ixsc14xb5hwo" path="res://assets/images/other/empty36x36.png" id="6_4mrxx"]
 [ext_resource type="Texture2D" uid="uid://vkofk253ua1s" path="res://animation/hourglass_animation.png" id="6_7r4gi"]
+[ext_resource type="Texture2D" uid="uid://btg0qqpbsi57n" path="res://assets/images/buttons/button_end_press.png" id="6_o8fc1"]
 [ext_resource type="PackedScene" uid="uid://fpjlb2wopxam" path="res://prefabs/chrono_choice.tscn" id="7_i7141"]
+[ext_resource type="Texture2D" uid="uid://bfys1nmutsmkw" path="res://assets/images/buttons/button_end_hover.png" id="7_xo05s"]
 [ext_resource type="Texture2D" uid="uid://dueabum8mjrqb" path="res://assets/images/other/shadow.png" id="10_w7kh3"]
 
 [sub_resource type="GDScript" id="GDScript_4wyf3"]
@@ -20,6 +22,14 @@ func _ready():
 	for i in range(5):
 		Global.spawn_player_card()
 		Global.spawn_enemy_card()
+"
+
+[sub_resource type="GDScript" id="GDScript_e3hyu"]
+script/source = "extends TextureButton
+
+func _on_button_up() -> void:
+	if (z_index == 0):
+		z_index = 116
 "
 
 [sub_resource type="GDScript" id="GDScript_w7kh3"]
@@ -319,11 +329,18 @@ animations = [{
 [node name="world" type="Node2D"]
 script = SubResource("GDScript_4wyf3")
 
-[node name="Background" type="Sprite2D" parent="."]
+[node name="BackgroundAermel" type="Sprite2D" parent="."]
 z_index = -1
 position = Vector2(512, 288)
 scale = Vector2(2, 2)
-texture = ExtResource("1_k0juu")
+texture = ExtResource("1_jhx03")
+
+[node name="Background" type="Sprite2D" parent="."]
+visible = false
+z_index = -1
+position = Vector2(512, 288)
+scale = Vector2(2, 2)
+texture = ExtResource("1_jhx03")
 
 [node name="enemy_hand" parent="." instance=ExtResource("4_k0juu")]
 position = Vector2(207, -34)
@@ -340,6 +357,24 @@ position = Vector2(448, 237)
 [node name="drop_spot3" parent="." instance=ExtResource("2_rwgxs")]
 position = Vector2(640, 236)
 
+[node name="button_end_round" type="TextureButton" parent="."]
+offset_left = 817.0
+offset_top = 490.0
+offset_right = 908.0
+offset_bottom = 517.0
+scale = Vector2(2, 2)
+texture_normal = ExtResource("5_jhx03")
+texture_pressed = ExtResource("6_o8fc1")
+texture_hover = ExtResource("7_xo05s")
+
+[node name="menu" parent="." instance=ExtResource("5_i7141")]
+visible = false
+z_index = 101
+
+[node name="chrono_choice" parent="." instance=ExtResource("7_i7141")]
+visible = false
+z_index = 101
+
 [node name="button_menu" type="TextureButton" parent="."]
 offset_left = 964.0
 offset_top = 4.0
@@ -349,23 +384,7 @@ scale = Vector2(2, 2)
 texture_normal = ExtResource("5_e3hyu")
 texture_pressed = ExtResource("5_e3hyu")
 texture_hover = ExtResource("5_e3hyu")
-
-[node name="button_end_round" type="TextureButton" parent="."]
-offset_left = 866.0
-offset_top = 435.0
-offset_right = 994.0
-offset_bottom = 563.0
-texture_normal = ExtResource("5_qfnet")
-texture_pressed = ExtResource("5_qfnet")
-texture_hover = ExtResource("5_qfnet")
-
-[node name="menu" parent="." instance=ExtResource("5_i7141")]
-visible = false
-z_index = 101
-
-[node name="chrono_choice" parent="." instance=ExtResource("7_i7141")]
-visible = false
-z_index = 101
+script = SubResource("GDScript_e3hyu")
 
 [node name="shadow_hourglass" type="Sprite2D" parent="."]
 position = Vector2(864, 262)
@@ -403,8 +422,9 @@ scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_817gm")
 frame_progress = 0.546459
 
-[connection signal="button_up" from="button_menu" to="menu" method="_on_button_menu_pressed"]
 [connection signal="button_up" from="button_end_round" to="hand" method="_on_button_end_round_button_up"]
+[connection signal="button_up" from="button_menu" to="menu" method="_on_button_menu_pressed"]
+[connection signal="button_up" from="button_menu" to="button_menu" method="_on_button_up"]
 [connection signal="button_up" from="button_chrono" to="chrono_choice" method="_on_button_chrono_pressed"]
 [connection signal="button_up" from="button_chrono" to="button_chrono" method="_on_button_up"]
 [connection signal="mouse_entered" from="button_chrono" to="button_chrono" method="_on_mouse_entered"]
