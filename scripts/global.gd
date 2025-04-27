@@ -6,9 +6,10 @@ var enemy_seed = 456
 const card_base_path = 'res://assets/images/cards/'
 
 var card_props = {
-	'1': {'name': "One", 'is_number': true, 'value': 1},
-	'2': {'name': "Two", 'is_number': true, 'value': 2},
-	'3': {'name': "Three", 'is_number': true, 'value': 3},
+	'0': {'name': "Zero", 'is_number': true, 'value': 0, 'texture': '0_card.png'},
+	'1': {'name': "One", 'is_number': true, 'value': 1, 'texture': '1_card.png'},
+	'2': {'name': "Two", 'is_number': true, 'value': 2, 'texture': '2_card.png'},
+	'3': {'name': "Three", 'is_number': true, 'value': 3, 'texture': '3_card.png'},
 	'4': {'name': "Four", 'is_number': true, 'value': 4, 'texture': '4_card.png'},
 	'5': {'name': "Five", 'is_number': true, 'value': 5, 'texture': '5_card.png'},
 	'6': {'name': "Six", 'is_number': true, 'value': 6, 'texture': '6_card.png'},
@@ -31,7 +32,7 @@ const no_card_texture = preload(card_base_path + "no_card.png")
 var numb_card_ids = []
 var spec_card_ids = []
 
-var player_bag = ['hal', '8', '8', '8']
+var player_bag = ['jok', '8', '8', '8']
 var enemy_bag = ['9', '9', 'hal']
 
 const card_prefab = preload("res://prefabs/card.tscn")
@@ -134,7 +135,7 @@ func spawn_enemy_card() -> void:
 func enemy_play(card, idx) -> Node:
 	var target_spot = drop_spots[idx]
 	target_spot.enemy_cards.append(card)
-	var move_to = target_spot.get_child(2).global_position - card.size / 2 - Vector2(0, target_spot.enemy_cards.size() * 23)
+	var move_to = target_spot.get_child(2).global_position - card.size / 2 - Vector2(0, (target_spot.enemy_cards.size() - 1) * 23)
 	enemy_hand.cards.erase(card)
 	played_cards.append(card)
 	played_card_positions.append(move_to)

@@ -30,13 +30,13 @@ func empty_card_refs():
 	cards = []
 	enemy_cards = []
 	
-func special_is_restricted(card_id) -> bool:
+func special_is_restricted(card_id, stack) -> bool:
 	if not Global.card_props[card_id]['is_number']:
-		if card_id == 'hal':
-			return false
+		if card_id == 'jok' and stack.is_empty():
+			return true
 		return false
 	else:
-		return true
+		return false
 
 func activate_trap_card(card_id) -> void:
 	if Global.card_props[card_id]['is_number']:
@@ -58,35 +58,52 @@ func activate_trap_card(card_id) -> void:
 				new_sum += Global.card_props[card.card_id]['value']
 		enemy_cards_sum = new_sum
 		$enemy_sum.text = str(enemy_cards_sum)
+	
+	elif card_id == 'nul':
+		for card in cards:
+			var is_number = card.null_texture()
+		player_cards_sum = 0
+		$sum.text = str(player_cards_sum)
 		
+		for card in enemy_cards:
+			var is_number = card.null_texture()
+		enemy_cards_sum = 0
+		$sum.text = str(enemy_cards_sum)
+	
+	elif card_id == 'jok':
+		cards[cards.size() - 1].become_card(cards[cards.size() - 2])
+
+func can_place(subject_id, own_stack, enemy_stack, base, checking_highlight) -> bool:
+	if checking_highlight and Global.node_being_dragged_is_player != 1:
+		return false
+	
+	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
+	
+	if special_is_restricted(subject_id, own_stack):
+		return false
+	
+	if not base:
+		restriction = true
+	else:
+		if Global.card_props[subject_id]['is_number']:
+			restriction = base == Global.card_props[subject_id]['value']
+	
+	if ((checking_highlight and guard != is_highlighted) or guard) and restriction:
+		if (not own_stack.is_empty() and own_stack[own_stack.size() - 1].card_id == 'blo') or (not enemy_stack.is_empty() and enemy_stack[enemy_stack.size() - 1].card_id == 'blo'):
+			return false
+		return true
+	return false
 
 func _physics_process(delta: float) -> void:
 	for idx in range(cards.size()):
 		var desired_pos = global_position + init_size / 2 + Vector2(0.0, idx * vertical_offset)
 		cards[idx].global_position = lerp(cards[idx].global_position + cards[idx].size / 2, desired_pos, snap_velocity * delta) - cards[idx].size / 2
 	
-	if !Global.node_being_dragged or Global.node_being_dragged_is_player != 1:
-		return
-	
-	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
-	
-	if not special_is_restricted(Global.node_being_dragged.card_id) or not base_value:
-		restriction = true
-	else:
-		restriction = base_value == Global.card_props[Global.node_being_dragged.card_id]['value']
-	
-	if guard != is_highlighted and restriction:
+	if Global.node_being_dragged and can_place(Global.node_being_dragged.card_id, cards, enemy_cards, base_value, true):
 		_toggle_highlight()
 
 func card_got_dropped(card) -> void:
-	var guard: bool = Rect2($CollisionShape2D.global_position - $CollisionShape2D.shape.size / 2.0, $CollisionShape2D.shape.size).has_point(get_global_mouse_position())
-	
-	if not base_value or not special_is_restricted(card.card_id):
-		restriction = true
-	else:
-		restriction = base_value == Global.card_props[card.card_id]['value']
-
-	if guard and restriction:
+	if can_place(card.card_id, cards, enemy_cards, base_value, false):
 		cards.append(card)
 		card.drop_spotted()
 		card.set_sprite_z_index(cards.size() - 1)
