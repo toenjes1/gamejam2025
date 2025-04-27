@@ -31,7 +31,7 @@ const no_card_texture = preload(card_base_path + "no_card.png")
 var numb_card_ids = []
 var spec_card_ids = []
 
-var player_bag = ['hal', '8', '8', '8']
+var player_bag = ['blo', '8', '8', '8']
 var enemy_bag = ['9', '9', 'hal']
 
 const card_prefab = preload("res://prefabs/card.tscn")
@@ -134,7 +134,7 @@ func spawn_enemy_card() -> void:
 func enemy_play(card, idx) -> Node:
 	var target_spot = drop_spots[idx]
 	target_spot.enemy_cards.append(card)
-	var move_to = target_spot.get_child(2).global_position - card.size / 2 - Vector2(0, target_spot.enemy_cards.size() * 23)
+	var move_to = target_spot.get_child(2).global_position - card.size / 2 - Vector2(0, (target_spot.enemy_cards.size() - 1) * 23)
 	enemy_hand.cards.erase(card)
 	played_cards.append(card)
 	played_card_positions.append(move_to)
