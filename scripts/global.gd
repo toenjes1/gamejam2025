@@ -287,7 +287,11 @@ func card_played(player_card, card_drop) -> void:
 	var enemy_play
 	var drop_spot
 	if game_phase == 0:
-		enemy_play = enemy_hand.choose_move(drop_spots, hand.cards)
+		if not moves_previewed.is_empty():
+			enemy_play = moves_previewed[0]
+			moves_previewed.remove_at(0)
+		else:
+			enemy_play = enemy_hand.choose_move(drop_spots, hand.cards)
 		if enemy_play[0] == null and enemy_play[1] == null:
 			cycle_phase('enemy')
 		else:

@@ -65,10 +65,9 @@ func _on_button_predict_pressed() -> void:
 	if Global.chrono_point_current >= cost_predict:
 		Global.chrono_point_current -= cost_predict
 		var viewed_move = Global.enemy_hand.choose_move(Global.drop_spots, Global.hand.cards)
-		viewed_move[0] = viewed_move[0].card_id
-		viewed_move[1] = Global.drop_spots.find(viewed_move[1])
+		viewed_move[0] = viewed_move[0]
 		
-		$output.text = \"They'll place a \"+viewed_move[0]+\" card on field \" + str(viewed_move[1]+1)
+		$output.text = \"They'll place a \"+viewed_move[0].card_id+\" card on field \" + str(Global.drop_spots.find(viewed_move[1])+1)
 		
 		Global.moves_previewed.append(viewed_move)
 		$label_chrono_points.text = \"Chrono:\\n\" + str(Global.chrono_point_current) + \"/\" + str(Global.chrono_point_max)

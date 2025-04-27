@@ -118,10 +118,10 @@ func minimax(cur_depth: int, target_depth: int, is_maximizing: bool, spots: Arra
 					card_id = '0'
 			elif card_id == 'hal':
 				for idx in range(new_own_spots[spot_idx].size()):
-					if Global.card_props[new_own_spots[spot_idx][idx]].is_numbder:
+					if Global.card_props[new_own_spots[spot_idx][idx]].is_number:
 						new_own_spots[spot_idx][idx] = str(int(ceilf(float(new_own_spots[spot_idx][idx]) / 2.0)))
 				for idx in range(new_other_spots[spot_idx].size()):
-					if Global.card_props[new_other_spots[spot_idx][idx]].is_numbder:
+					if Global.card_props[new_other_spots[spot_idx][idx]].is_number:
 						new_other_spots[spot_idx][idx] = str(int(ceilf(float(new_other_spots[spot_idx][idx]) / 2.0)))
 			elif card_id == 'gen':
 				new_own_spots[spot_idx] = []
