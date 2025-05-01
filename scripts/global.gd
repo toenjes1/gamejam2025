@@ -35,8 +35,8 @@ const drop_point_prefab = preload("res://prefabs/drop_spot.tscn")
 var numb_card_ids = []
 var spec_card_ids = []
 
-var player_bag = []
-var enemy_bag = []
+var player_bag = ['jok']
+var enemy_bag = ['swa', 'jok']
 
 const card_prefab = preload("res://prefabs/card.tscn")
 var hand = null

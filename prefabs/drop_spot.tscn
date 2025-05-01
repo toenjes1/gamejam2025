@@ -132,11 +132,19 @@ func activate_trap_card(trap_card, activator) -> bool:
 		$enemy_sum.text = str(enemy_cards_sum)
 	
 	elif card_id == 'jok':
-		if cards.size() < 2:
+		var used_cards
+		if activator == 'player':
+			used_cards = cards
+		else:
+			used_cards = enemy_cards
+		
+		if used_cards.size() < 2:
 			trap_card.set_sprite_texture(load(\"res://assets/images/cards/0_card.png\"))
 			trap_card.set_card_id('0')
 		else:
-			cards[cards.size() - 1].become_card(cards[cards.size() - 2])
+			used_cards[used_cards.size() - 1].become_card(used_cards[used_cards.size() - 2])
+		recalc_enemy_sum()
+		recalc_player_sum()
 	
 	elif card_id == 'rev':
 		is_reversed = !is_reversed
@@ -158,44 +166,65 @@ func activate_trap_card(trap_card, activator) -> bool:
 	elif card_id == 'swa':
 		var min_sum = 200 #viel
 		var min_idx = -1
+		
 		for i in range(Global.drop_spots.size()):
 			if i == Global.drop_spots.find(self) or Global.drop_spots[i].cards.is_empty():
 				continue
 			if Global.drop_spots[i].player_cards_sum < min_sum:
 				min_sum = Global.drop_spots[i].player_cards_sum
 				min_idx = i
+				
+		for i in range(Global.drop_spots.size()):
+			if i == Global.drop_spots.find(self) or Global.drop_spots[i].enemy_cards.is_empty():
+				continue
+			if Global.drop_spots[i].enemy_cards_sum < min_sum:
+				min_sum = Global.drop_spots[i].enemy_cards_sum
+				min_idx = i
+		
 		var target_spot = Global.drop_spots[min_idx]
+		var target_cards
+		var here_cards
+		if activator == 'player':
+			target_cards = target_spot.cards
+			here_cards = cards
+		else:
+			target_cards = target_spot.enemy_cards
+			here_cards = enemy_cards
 		
 		var tmp_array = []
 		
-		for card in target_spot.cards:
+		for card in target_cards:
 			print(card)
-			target_spot.cards.erase(card)
+			target_cards.erase(card)
 			tmp_array.append(card)
-		if not target_spot.cards.is_empty():
-			var tmp = target_spot.cards[target_spot.cards.size() - 1]
-			target_spot.cards.erase(tmp)
+		if not target_cards.is_empty():
+			var tmp = target_cards[target_cards.size() - 1]
+			target_cards.erase(tmp)
 			tmp_array.append(tmp)
 			
-		for card in cards:
-			cards.erase(card)
-			target_spot.cards.append(card)
-		if not cards.is_empty():
-			var tmp = cards[cards.size() - 1]
-			cards.erase(tmp)
-			target_spot.cards.append(tmp)
+		for card in here_cards:
+			here_cards.erase(card)
+			target_cards.append(card)
+		if not here_cards.is_empty():
+			var tmp = here_cards[here_cards.size() - 1]
+			here_cards.erase(tmp)
+			target_cards.append(tmp)
 		
-		cards += tmp_array
+		here_cards += tmp_array
 		
-		recalc_player_sum()
-		target_spot.recalc_player_sum()
+		if activator == 'player':
+			recalc_player_sum()
+			target_spot.recalc_player_sum()
+			var tmp_val: int = base_value
+			base_value = target_spot.base_value
+			target_spot.base_value = tmp_val
+			set_type_display()
+			target_spot.set_type_display()
+		else:
+			recalc_enemy_sum()
+			target_spot.recalc_enemy_sum()
 		
-		var tmp_val: int = base_value
-		base_value = target_spot.base_value
-		target_spot.base_value = tmp_val
 		
-		set_type_display()
-		target_spot.set_type_display()
 	
 	elif card_id == 'gen':
 		union_genesis_trap(self, true, false)
@@ -311,9 +340,11 @@ func enemy_stack_z_index_update():
 
 func recalc_player_sum():
 	var new_sum = 0
+	print('player card size =', cards.size())
 	for card in cards:
 		if Global.card_props[card.card_id]['is_number']:
 			new_sum += Global.card_props[card.card_id]['value']
+			print(new_sum)
 	player_cards_sum = new_sum
 	set_sum_display(new_sum)
 
