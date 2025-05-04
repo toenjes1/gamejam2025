@@ -14,7 +14,7 @@ const max_stack_size: int = 4
 
 const snap_velocity = 15.0
 const vertical_offset = 23
-@onready var init_size = $CollisionShape2D.shape.size
+var init_size
 
 var is_highlighted = false
 var cards = []
@@ -28,6 +28,9 @@ var global_index
 
 func _ready() -> void:
 	Global.drop_spots.append(self)
+	$CollisionShape2D.shape.size = Vector2(108.0, 149.0)
+	init_size = $CollisionShape2D.shape.size
+	
 
 func player_is_full() -> bool:
 	return cards.size() >= max_stack_size
@@ -254,6 +257,8 @@ func activate_trap_card(trap_card, activator) -> bool:
 		set_type_display()
 		$enemy_sum.text = '0'
 		return true
+	#for el in Global.drop_spots:
+	#	el.player_stack_z_index_update()
 	return false
 
 func can_place(subject_id, own_stack, enemy_stack, base, checking_highlight) -> bool:
@@ -273,6 +278,7 @@ func can_place(subject_id, own_stack, enemy_stack, base, checking_highlight) -> 
 	return false
 
 func _physics_process(delta: float) -> void:
+	var idxs = []
 	for idx in range(cards.size()):
 		var desired_pos = global_position + init_size / 2 + Vector2(0.0, idx * vertical_offset)
 		cards[idx].global_position = lerp(cards[idx].global_position + cards[idx].size / 2, desired_pos, snap_velocity * delta) - cards[idx].size / 2
@@ -337,6 +343,10 @@ func calculate_enemy_sum(new_card):
 func enemy_stack_z_index_update():
 	for idx in range(enemy_cards.size()):
 		enemy_cards[idx].set_sprite_z_index(idx)
+
+func player_stack_z_index_update():
+	for idx in range(cards.size()):
+		cards[idx].set_sprite_z_index(idx)
 
 func recalc_player_sum():
 	var new_sum = 0
